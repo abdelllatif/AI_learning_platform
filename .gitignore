@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# SQLite
+*.sqlite3
+
+# Django
+media/
+staticfiles/
+
+# Environment
+.env
+.venv/
+venv/
+
+# React
+FRONTEND/node_modules/
+FRONTEND/dist/
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
