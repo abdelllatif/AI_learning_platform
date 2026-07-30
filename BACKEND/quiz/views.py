@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +14,10 @@ class QuizListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Quiz.objects.all().order_by("-created_at")
     serializer_class = QuizSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["title", "description"]
+    ordering_fields = ["created_at", "updated_at", "title"]
+    ordering = ["-created_at"]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -64,6 +69,10 @@ class QuizSubmitView(APIView):
 class QuizHistoryView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = QuizAttemptSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["quiz__title"]
+    ordering_fields = ["started_at", "finished_at", "score"]
+    ordering = ["-started_at"]
 
     def get_queryset(self):
         return QuizAttempt.objects.filter(user=self.request.user).order_by("-started_at")

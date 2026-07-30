@@ -1,8 +1,8 @@
-{
+﻿{
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-47ab-89cd-0123456789ab",
     "name": "AI Learning Platform - Full API",
-    "description": "Comprehensive Postman collection for Auth, Documents, and Chat endpoints",
+    "description": "Comprehensive Postman collection for Auth, Documents, Chat, Quiz, and Swagger endpoints",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -10,7 +10,8 @@
     {"key": "access_token", "value": ""},
     {"key": "refresh_token", "value": ""},
     {"key": "document_id", "value": "1"},
-    {"key": "chat_id", "value": "1"}
+    {"key": "chat_id", "value": "1"},
+    {"key": "quiz_id", "value": "1"}
   ],
   "item": [
     {
@@ -146,7 +147,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/documents/", "host": ["{{base_url}}"], "path": ["api", "documents", ""]}
+            "url": {"raw": "{{base_url}}/api/documents/?search=invoice&ordering=-uploaded_at", "host": ["{{base_url}}"], "path": ["api", "documents", ""], "query": [{"key": "search", "value": "invoice"}, {"key": "ordering", "value": "-uploaded_at"}]}
           }
         },
         {
@@ -196,7 +197,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/chat/", "host": ["{{base_url}}"], "path": ["api", "chat", ""]}
+            "url": {"raw": "{{base_url}}/api/chat/?search=My&ordering=-updated_at", "host": ["{{base_url}}"], "path": ["api", "chat", ""], "query": [{"key": "search", "value": "My"}, {"key": "ordering", "value": "-updated_at"}]}
           }
         },
         {
@@ -229,7 +230,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/chat/{{chat_id}}/messages/", "host": ["{{base_url}}"], "path": ["api", "chat", "{{chat_id}}", "messages", ""]}
+            "url": {"raw": "{{base_url}}/api/chat/{{chat_id}}/messages/?search=hello&ordering=created_at", "host": ["{{base_url}}"], "path": ["api", "chat", "{{chat_id}}", "messages", ""], "query": [{"key": "search", "value": "hello"}, {"key": "ordering", "value": "created_at"}]}
           }
         },
         {
@@ -248,6 +249,75 @@
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}, {"key": "Content-Type", "value": "application/json"}],
             "body": {"mode": "raw", "raw": "{\n  \"content\": \"hello im ure agent i will help u today any way its just a response static so u know and i guess what wan we do\"\n}"},
             "url": {"raw": "{{base_url}}/api/chat/{{chat_id}}/messages/ai/", "host": ["{{base_url}}"], "path": ["api", "chat", "{{chat_id}}", "messages", "ai", ""]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quiz",
+      "item": [
+        {
+          "name": "Create Quiz",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Quiz\",\n  \"description\": \"A quiz for testing.\",\n  \"questions\": [\n    {\n      \"text\": \"What is 2 + 2?\",\n      \"order\": 1,\n      \"answers\": [\n        {\n          \"text\": \"3\",\n          \"is_correct\": false\n        },\n        {\n          \"text\": \"4\",\n          \"is_correct\": true\n        }\n      ]\n    },\n    {\n      \"text\": \"What is the capital of France?\",\n      \"order\": 2,\n      \"answers\": [\n        {\n          \"text\": \"Paris\",\n          \"is_correct\": true\n        },\n        {\n          \"text\": \"Berlin\",\n          \"is_correct\": false\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/quiz/", "host": ["{{base_url}}"], "path": ["api", "quiz", ""]}
+          }
+        },
+        {
+          "name": "List Quizzes",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/quiz/?search=sample&ordering=-created_at", "host": ["{{base_url}}"], "path": ["api", "quiz", ""], "query": [{"key": "search", "value": "sample"}, {"key": "ordering", "value": "-created_at"}]}
+          }
+        },
+        {
+          "name": "Get Quiz Details",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/quiz/{{quiz_id}}/", "host": ["{{base_url}}"], "path": ["api", "quiz", "{{quiz_id}}", ""]}
+          }
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"answers\": {\n    \"<question_id>\": <answer_id>,\n    \"<question_id>\": <answer_id>\n  }\n}"},
+            "url": {"raw": "{{base_url}}/api/quiz/{{quiz_id}}/submit/", "host": ["{{base_url}}"], "path": ["api", "quiz", "{{quiz_id}}", "submit", ""]}
+          }
+        },
+        {
+          "name": "Quiz History",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/quiz/history/?search=Sample&ordering=-started_at", "host": ["{{base_url}}"], "path": ["api", "quiz", "history", ""], "query": [{"key": "search", "value": "Sample"}, {"key": "ordering", "value": "-started_at"}]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Docs",
+      "item": [
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/docs/", "host": ["{{base_url}}"], "path": ["api", "docs", ""]}
+          }
+        },
+        {
+          "name": "OpenAPI Schema",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/schema/", "host": ["{{base_url}}"], "path": ["api", "schema", ""]}
           }
         }
       ]

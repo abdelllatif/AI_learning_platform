@@ -1,7 +1,7 @@
 ﻿from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -17,6 +17,8 @@ from .serializers import (
 
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -34,6 +36,8 @@ class RegisterView(APIView):
 
 
 class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         token = request.data.get("token")
         if not token:

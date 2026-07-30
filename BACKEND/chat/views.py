@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -15,6 +16,10 @@ from .serializers import (
 class ChatListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChatSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["title"]
+    ordering_fields = ["updated_at", "created_at", "title"]
+    ordering = ["-updated_at"]
 
     def get_queryset(self):
         return Chat.objects.filter(owner=self.request.user).order_by("-updated_at")
@@ -46,6 +51,11 @@ class ChatRenameView(generics.UpdateAPIView):
 class MessageListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageSerializer
+    pagination_class = None
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["content"]
+    ordering_fields = ["created_at"]
+    ordering = ["created_at"]
 
     def get_queryset(self):
         chat = get_object_or_404(Chat, pk=self.kwargs["chat_id"], owner=self.request.user)

@@ -1,5 +1,6 @@
 ﻿from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import generics, status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -21,13 +22,16 @@ class DocumentUploadView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DocumentListView(APIView):
+class DocumentListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = DocumentSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["title", "language", "status"]
+    ordering_fields = ["uploaded_at", "title", "language", "status"]
+    ordering = ["-uploaded_at"]
 
-    def get(self, request):
-        documents = Document.objects.filter(owner=request.user).order_by("-uploaded_at")
-        serializer = DocumentSerializer(documents, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Document.objects.filter(owner=self.request.user)
 
 
 class DocumentDetailView(APIView):
