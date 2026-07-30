@@ -1,15 +1,56 @@
+﻿import os
+
 from rest_framework import serializers
 
 from .models import Document
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    owner = serializers.CharField(source="owner.username", read_only=True)
 
     class Meta:
         model = Document
-        fields = "__all__"
-        read_only_fields = (
+        fields = [
+            "id",
             "title",
+            "file",
+            "language",
+            "status",
+            "uploaded_at",
+            "owner",
+        ]
+        read_only_fields = (
             "owner",
             "uploaded_at",
         )
+
+    def validate_file(self, value):
+        if value.size == 0:
+            raise serializers.ValidationError("Uploaded file cannot be empty.")
+
+        max_size = 10 * 1024 * 1024
+        if value.size > max_size:
+            raise serializers.ValidationError("File size must be 10MB or smaller.")
+
+        content_type = getattr(value, "content_type", "")
+        if content_type != "application/pdf" and not value.name.lower().endswith(".pdf"):
+            raise serializers.ValidationError("Only PDF files are allowed.")
+        return value
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        uploaded_file = attrs.get("file")
+        if request and request.user.is_authenticated and uploaded_file:
+            title = os.path.splitext(uploaded_file.name)[0]
+            if Document.objects.filter(owner=request.user, title=title).exists():
+                raise serializers.ValidationError(
+                    {"file": "A document with this name already exists."}
+                )
+        return attrs
+
+    def create(self, validated_data):
+        upload = validated_data.get("file")
+        title = os.path.splitext(upload.name)[0]
+        if not validated_data.get("title"):
+            validated_data["title"] = title
+        return super().create(validated_data)
