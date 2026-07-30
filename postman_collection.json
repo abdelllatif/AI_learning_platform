@@ -23,7 +23,7 @@
               "mode": "raw",
               "raw": "{\n  \"username\": \"postman_user\",\n  \"email\": \"postman@example.com\",\n  \"password\": \"PostmanPass123!\",\n  \"email_verification\": false\n}"
             },
-            "url": {"raw": "{{base_url}}/api/auth/register/", "path": ["api", "auth", "register"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/register/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "register"]}
           }
         },
         {
@@ -32,7 +32,7 @@
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
             "body": {"mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"password\": \"PostmanPass123!\"\n}"},
-            "url": {"raw": "{{base_url}}/api/token/", "path": ["api", "token"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/token/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "token"]}
           },
           "event": [
             {
@@ -55,7 +55,7 @@
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
             "body": {"mode": "raw", "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"},
-            "url": {"raw": "{{base_url}}/api/token/refresh/", "path": ["api", "token", "refresh"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/token/refresh/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "token", "refresh"]}
           },
           "event": [
             {
@@ -77,7 +77,7 @@
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
             "body": {"mode": "raw", "raw": "{\n  \"token\": \"<paste-verification-token-here>\"\n}"},
-            "url": {"raw": "{{base_url}}/api/auth/verify-email/", "path": ["api", "auth", "verify-email"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/verify-email/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "verify-email"]}
           }
         },
         {
@@ -85,7 +85,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/auth/profile/", "path": ["api", "auth", "profile"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/profile/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "profile"]}
           }
         },
         {
@@ -97,7 +97,7 @@
               {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {"mode": "raw", "raw": "{\n  \"username\": \"postman_user_updated\",\n  \"email\": \"postman_updated@example.com\"\n}"},
-            "url": {"raw": "{{base_url}}/api/auth/profile/", "path": ["api", "auth", "profile"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/profile/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "profile"]}
           }
         },
         {
@@ -109,7 +109,7 @@
               {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {"mode": "raw", "raw": "{\n  \"old_password\": \"PostmanPass123!\",\n  \"new_password\": \"NewPostmanPass123!\",\n  \"confirm_password\": \"NewPostmanPass123!\"\n}"},
-            "url": {"raw": "{{base_url}}/api/auth/change-password/", "path": ["api", "auth", "change-password"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/change-password/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "change-password"]}
           }
         },
         {
@@ -118,7 +118,7 @@
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{access_token}}"}],
             "body": {"mode": "raw", "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"},
-            "url": {"raw": "{{base_url}}/api/auth/logout/", "path": ["api", "auth", "logout"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/auth/logout/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "auth", "logout"]}
           },
           "event": [
             {
@@ -143,7 +143,7 @@
                 {"key": "file", "type": "file", "src": ""}
               ]
             },
-            "url": {"raw": "{{base_url}}/api/documents/upload/", "path": ["api", "documents", "upload"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/documents/upload/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "documents", "upload"]}
           }
         },
         {
@@ -151,7 +151,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/documents/", "path": ["api", "documents"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/documents/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "documents"]}
           }
         },
         {
@@ -159,7 +159,7 @@
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/", "path": ["api", "documents", "{{document_id}}"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/documents/{{document_id}}/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "documents", "{{document_id}}"]}
           }
         },
         {
@@ -171,7 +171,7 @@
               {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Document Title\"\n}"},
-            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/rename/", "path": ["api", "documents", "{{document_id}}", "rename"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/documents/{{document_id}}/rename/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "documents", "{{document_id}}", "rename"]}
           }
         },
         {
@@ -179,7 +179,7 @@
           "request": {
             "method": "DELETE",
             "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
-            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/", "path": ["api", "documents", "{{document_id}}"]}
+            "url": {"raw": "http://127.0.0.1:8000/api/documents/{{document_id}}/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "documents", "{{document_id}}"]}
           }
         }
       ]
