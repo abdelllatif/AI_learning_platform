@@ -33,11 +33,12 @@ class QuizSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         questions_data = validated_data.pop("questions", [])
-        owner = self.context["request"].user
+        owner = validated_data.pop("owner", None) or self.context["request"].user
         quiz = Quiz.objects.create(owner=owner, **validated_data)
         for idx, q in enumerate(questions_data):
             answers = q.pop("answers", [])
-            question = Question.objects.create(quiz=quiz, order=idx, **q)
+            order = q.pop("order", idx)
+            question = Question.objects.create(quiz=quiz, order=order, **q)
             for a in answers:
                 Answer.objects.create(question=question, **a)
         return quiz
