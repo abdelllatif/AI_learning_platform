@@ -1,0 +1,93 @@
+{
+  "info": {
+    "_postman_id": "3f2a9b6e-9b3c-4d1a-8b2e-1234567890ab",
+    "name": "AI Learning Platform - Chat",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{access_token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {"mode": "raw", "raw": "{\n  \"title\": \"My Chat\"\n}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", ""]}
+      }
+    },
+    {
+      "name": "List Chats",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", ""]}
+      }
+    },
+    {
+      "name": "Get Chat",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", ""]}
+      }
+    },
+    {
+      "name": "Rename Chat",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{access_token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Chat Title\"\n}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/rename/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", "rename", ""]}
+      }
+    },
+    {
+      "name": "Delete Chat",
+      "request": {
+        "method": "DELETE",
+        "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", ""]}
+      }
+    },
+    {
+      "name": "List Messages",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/messages/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", "messages", ""]}
+      }
+    },
+    {
+      "name": "Save User Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{access_token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {"mode": "raw", "raw": "{\n  \"content\": \"Hello\"\n}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/messages/user/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", "messages", "user", ""]}
+      }
+    },
+    {
+      "name": "Save AI Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{access_token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {"mode": "raw", "raw": "{\n  \"content\": \"hello im ure agent i will help u today any way its just a response static so u know and i guess what wan we do\"\n}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/chat/{{chat_id}}/messages/ai/", "protocol": "http", "host": ["127.0.0.1"], "port": "8000", "path": ["api", "chat", "{{chat_id}}", "messages", "ai", ""]}
+      }
+    }
+  ],
+  "variable": [
+    {"key": "access_token", "value": ""},
+    {"key": "chat_id", "value": "1"}
+  ]
+}
