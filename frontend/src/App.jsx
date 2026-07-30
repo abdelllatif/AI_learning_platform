@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Link, NavLink } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
@@ -15,11 +15,16 @@ import Landing from './pages/Landing'
 import Footer from './components/Footer'
 
 export default function App(){
+  const location = useLocation()
+  const hideSidebar = location.pathname === '/'
+
   return (
     <div>
       <div className="topnav"><Nav /></div>
       <div className="app-shell">
-        <aside className="sidebar"><Sidebar /></aside>
+        {!hideSidebar && (
+          <aside className="sidebar"><Sidebar /></aside>
+        )}
         <main className="main">
           <Routes>
             <Route path="/" element={<Landing/>} />
