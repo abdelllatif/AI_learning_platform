@@ -1,0 +1,8 @@
+{
+  "name": "ai-learning-platform",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "install-frontend": "cd frontend && npm install"
+  }
+}
