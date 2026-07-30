@@ -1,0 +1,188 @@
+﻿{
+  "info": {
+    "name": "AI Learning Platform API",
+    "description": "Postman collection for testing authentication and documents APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8000"},
+    {"key": "access_token", "value": ""},
+    {"key": "refresh_token", "value": ""},
+    {"key": "document_id", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"postman_user\",\n  \"email\": \"postman@example.com\",\n  \"password\": \"PostmanPass123!\",\n  \"email_verification\": false\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/register/"}
+          }
+        },
+        {
+          "name": "Token Obtain",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"password\": \"PostmanPass123!\"\n}"},
+            "url": {"raw": "{{base_url}}/api/token/"}
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var data = pm.response.json();",
+                  "if(data.access){ pm.environment.set('access_token', data.access); }",
+                  "if(data.refresh){ pm.environment.set('refresh_token', data.refresh); }",
+                  "console.log('Saved access and refresh tokens to environment');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"},
+            "url": {"raw": "{{base_url}}/api/token/refresh/"}
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var data = pm.response.json();",
+                  "if(data.access){ pm.environment.set('access_token', data.access); }",
+                  "console.log('Updated access_token from refresh');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"token\": \"<paste-verification-token-here>\"\n}"},
+            "url": {"raw": "{{base_url}}/api/auth/verify-email/"}
+          }
+        },
+        {
+          "name": "Profile - GET",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/auth/profile/"}
+          }
+        },
+        {
+          "name": "Profile - PUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"postman_user_updated\",\n  \"email\": \"postman_updated@example.com\"\n}"},
+            "url": {"raw": "{{base_url}}/api/auth/profile/"}
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"old_password\": \"PostmanPass123!\",\n  \"new_password\": \"NewPostmanPass123!\",\n  \"confirm_password\": \"NewPostmanPass123!\"\n}"},
+            "url": {"raw": "{{base_url}}/api/auth/change-password/"}
+          }
+        },
+        {
+          "name": "Logout (Blacklist)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"},
+            "url": {"raw": "{{base_url}}/api/auth/logout/"}
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {"type": "text/javascript", "exec": ["pm.environment.unset('access_token'); pm.environment.unset('refresh_token');"]}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload PDF",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "file", "type": "file", "src": ""}
+              ]
+            },
+            "url": {"raw": "{{base_url}}/api/documents/upload/"}
+          }
+        },
+        {
+          "name": "List My Documents",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/documents/"}
+          }
+        },
+        {
+          "name": "Get Document Details",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/"}
+          }
+        },
+        {
+          "name": "Rename Document",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Updated Document Title\"\n}"},
+            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/rename/"}
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}],
+            "url": {"raw": "{{base_url}}/api/documents/{{document_id}}/"}
+          }
+        }
+      ]
+    }
+  ]
+}
