@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Library — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .lib-head{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; flex-wrap:wrap; gap:16px; }
+  .lib-head h1{ font-size:26px; margin-bottom:6px; }
+  .lib-head p{ color:var(--text-muted); font-size:14.5px; }
+
+  .toolbar{ display:flex; gap:12px; align-items:center; margin-bottom:26px; flex-wrap:wrap; }
+  .search-box{ flex:1; min-width:220px; position:relative; }
+  .search-box input{ width:100%; height:46px; padding:0 16px 0 44px; border-radius:12px; border:1.5px solid var(--border-strong); background:var(--surface); }
+  .search-box input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 4px var(--primary-tint); }
+  .search-box i{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--text-faint); width:17px; height:17px; }
+  .filter-chips{ display:flex; gap:8px; }
+  .chip{ height:46px; padding:0 16px; border-radius:12px; border:1.5px solid var(--border-strong); font-weight:600; font-size:13.5px; color:var(--text-muted); display:flex; align-items:center; gap:6px; transition:background var(--fast), border-color var(--fast), color var(--fast); }
+  .chip:hover{ background:var(--surface-sunken); }
+  .chip.active{ background:var(--primary); border-color:var(--primary); color:#fff; }
+  .sort-select{ height:46px; border-radius:12px; border:1.5px solid var(--border-strong); padding:0 14px; background:var(--surface); font-weight:600; font-size:13.5px; color:var(--text-muted); }
+
+  .shelf-label{ display:flex; align-items:center; gap:10px; margin:36px 0 16px; }
+  .shelf-label h2{ font-size:15px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-family:var(--font-body); font-weight:700; }
+  .shelf-label::after{ content:''; flex:1; height:1px; background:var(--border); }
+
+  .book-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+  .book-card{ position:relative; padding:22px 20px 20px; display:flex; flex-direction:column; gap:14px; transition:transform var(--fast), box-shadow var(--fast); overflow:hidden; }
+  .book-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-md); }
+  .book-spine{ position:absolute; left:0; top:0; bottom:0; width:6px; }
+  .book-top{ display:flex; justify-content:space-between; align-items:flex-start; padding-left:6px; }
+  .book-icon{ width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; }
+  .book-card h3{ font-size:15px; padding-left:6px; }
+  .book-meta{ display:flex; gap:10px; font-size:12px; color:var(--text-faint); padding-left:6px; flex-wrap:wrap; }
+  .book-meta span{ display:flex; align-items:center; gap:4px; }
+  .book-foot{ display:flex; justify-content:space-between; align-items:center; padding-left:6px; margin-top:auto; }
+  .icon-menu{ width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); }
+  .icon-menu:hover{ background:var(--surface-sunken); color:var(--text); }
+
+  .empty-add{
+    border:1.5px dashed var(--border-strong); border-radius:var(--r-lg); min-height:190px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    color:var(--text-muted); transition:background var(--fast), color var(--fast), border-color var(--fast);
+  }
+  .empty-add:hover{ background:var(--primary-tint); color:var(--primary); border-color:var(--primary); }
+
+  @media (max-width:1080px){ .book-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .book-grid{ grid-template-columns:1fr; } .nav-links{ display:none; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html" class="active">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+      <button class="btn-icon" aria-label="Settings" onclick="window.location='settings.html'"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app-main">
+  <div class="lib-head">
+    <div>
+      <h1>📚 My Library</h1>
+      <p>14 documents across 4 subjects</p>
+    </div>
+    <a href="upload.html" class="btn btn-primary"><i data-lucide="plus" style="width:16px;height:16px"></i> Upload PDF</a>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i data-lucide="search"></i>
+      <input type="text" placeholder="Search your library…">
+    </div>
+    <div class="filter-chips">
+      <button class="chip active">All</button>
+      <button class="chip"><span class="badge-dot" style="color:#10B981"></span>Ready</button>
+      <button class="chip"><span class="badge-dot" style="color:#F59E0B"></span>Processing</button>
+    </div>
+    <select class="sort-select">
+      <option>Recently opened</option>
+      <option>Recently added</option>
+      <option>A–Z</option>
+    </select>
+  </div>
+
+  <div class="shelf-label"><h2>Computer Science</h2></div>
+  <div class="book-grid">
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#C0392B;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--danger-tint); color:#C0392B;"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Java Fundamentals.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>34 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>English</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        <span class="btn btn-soft btn-sm">Open</span>
+      </div>
+    </a>
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#4F46E5;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Algorithms & Data Structures.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>112 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>English</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        <span class="btn btn-soft btn-sm">Open</span>
+      </div>
+    </a>
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#F59E0B;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--warning-tint); color:#9A6205;"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Python for Beginners.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>76 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>English</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-warning"><span class="badge-dot"></span>Processing</span>
+        <span class="btn btn-ghost btn-sm" style="opacity:0.5;">Open</span>
+      </div>
+    </a>
+    <a href="upload.html" class="empty-add">
+      <i data-lucide="plus-circle" style="width:26px;height:26px"></i>
+      <b style="font-size:13.5px;">Add to this shelf</b>
+    </a>
+  </div>
+
+  <div class="shelf-label"><h2>Mathematics</h2></div>
+  <div class="book-grid">
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#4F46E5;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Linear Algebra.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>58 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>English</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        <span class="btn btn-soft btn-sm">Open</span>
+      </div>
+    </a>
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#10B981;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Calculus II.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>90 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>Français</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        <span class="btn btn-soft btn-sm">Open</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="shelf-label"><h2>Biology</h2></div>
+  <div class="book-grid">
+    <a href="document.html" class="card book-card">
+      <div class="book-spine" style="background:#10B981;"></div>
+      <div class="book-top">
+        <div class="book-icon" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text"></i></div>
+        <button class="icon-menu"><i data-lucide="more-horizontal" style="width:16px;height:16px"></i></button>
+      </div>
+      <h3>Cell Biology.pdf</h3>
+      <div class="book-meta">
+        <span><i data-lucide="file-stack" style="width:12px;height:12px"></i>21 pages</span>
+        <span><i data-lucide="globe" style="width:12px;height:12px"></i>English</span>
+      </div>
+      <div class="book-foot">
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        <span class="btn btn-soft btn-sm">Open</span>
+      </div>
+    </a>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

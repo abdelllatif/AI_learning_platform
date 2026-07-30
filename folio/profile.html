@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .profile-shell{ max-width:840px; margin:0 auto; }
+  .profile-head{ padding:36px; display:flex; gap:22px; align-items:center; margin-bottom:26px; flex-wrap:wrap; }
+  .avatar-lg{ width:84px; height:84px; border-radius:24px; background:linear-gradient(155deg,#7C74F0,var(--primary)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:30px; flex-shrink:0; box-shadow:var(--shadow-primary); }
+  .profile-head-body{ flex:1; min-width:200px; }
+  .profile-head-body h1{ font-size:22px; margin-bottom:4px; }
+  .profile-head-body span{ font-size:13.5px; color:var(--text-muted); }
+  .profile-head-actions{ margin-left:auto; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .stat-tile{ padding:22px; text-align:center; }
+  .stat-tile i{ color:var(--primary); margin-bottom:10px; }
+  .stat-tile b{ display:block; font-family:var(--font-display); font-size:24px; margin-bottom:2px; }
+  .stat-tile span{ font-size:12.5px; color:var(--text-muted); }
+
+  .pref-panel{ padding:26px 28px; margin-bottom:20px; }
+  .pref-panel h2{ font-size:15.5px; margin-bottom:18px; }
+  .pref-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); }
+  .pref-row:last-child{ border-bottom:none; }
+  .pref-row-label{ display:flex; align-items:center; gap:12px; }
+  .pref-row-icon{ width:38px; height:38px; border-radius:10px; background:var(--surface-sunken); display:flex; align-items:center; justify-content:center; color:var(--text-muted); }
+  .pref-row-label b{ font-size:14px; display:block; }
+  .pref-row-label span{ font-size:12.5px; color:var(--text-faint); }
+
+  .select-inline{ height:38px; border-radius:9px; border:1.5px solid var(--border-strong); padding:0 12px; font-weight:600; font-size:13px; color:var(--text-muted); background:var(--surface); }
+
+  .toggle{ position:relative; width:44px; height:26px; border-radius:999px; background:var(--border-strong); flex-shrink:0; transition:background var(--fast); }
+  .toggle::after{ content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform var(--fast); box-shadow:var(--shadow-sm); }
+  .toggle.on{ background:var(--primary); }
+  .toggle.on::after{ transform:translateX(18px); }
+
+  .subject-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .subject-chip{ padding:8px 14px; border-radius:999px; font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:8px; }
+
+  @media (max-width:700px){ .stat-grid{ grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" aria-label="Settings" onclick="window.location='settings.html'"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar" style="box-shadow:0 0 0 2px var(--primary);">A</a>
+    </div>
+  </div>
+</header>
+
+<main class="app-main profile-shell">
+  <div class="card profile-head">
+    <div class="avatar-lg">A</div>
+    <div class="profile-head-body">
+      <h1>Abdellatif Amine</h1>
+      <span>abdellatif@example.com · Joined June 2026</span>
+    </div>
+    <div class="profile-head-actions">
+      <a href="settings.html" class="btn btn-ghost btn-sm"><i data-lucide="pencil" style="width:14px;height:14px"></i> Edit Profile</a>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="card stat-tile"><i data-lucide="library"></i><b>14</b><span>Documents</span></div>
+    <div class="card stat-tile"><i data-lucide="message-square-text"></i><b>27</b><span>Chats</span></div>
+    <div class="card stat-tile"><i data-lucide="list-checks"></i><b>19</b><span>Quizzes</span></div>
+    <div class="card stat-tile"><i data-lucide="target"></i><b>84%</b><span>Avg. score</span></div>
+  </div>
+
+  <div class="card pref-panel">
+    <h2>My subjects</h2>
+    <div class="subject-chips">
+      <span class="subject-chip" style="background:var(--danger-tint); color:#C0392B;">Computer Science</span>
+      <span class="subject-chip" style="background:var(--primary-tint); color:var(--primary-dark);">Mathematics</span>
+      <span class="subject-chip" style="background:var(--success-tint); color:#067A55;">Biology</span>
+      <span class="subject-chip" style="background:var(--warning-tint); color:#9A6205;">Physics</span>
+    </div>
+  </div>
+
+  <div class="card pref-panel">
+    <h2>Preferences</h2>
+    <div class="pref-row">
+      <div class="pref-row-label">
+        <div class="pref-row-icon"><i data-lucide="languages" style="width:17px;height:17px"></i></div>
+        <div><b>Language</b><span>Interface & chat language</span></div>
+      </div>
+      <select class="select-inline">
+        <option>English</option>
+        <option>العربية</option>
+        <option>Français</option>
+      </select>
+    </div>
+    <div class="pref-row">
+      <div class="pref-row-label">
+        <div class="pref-row-icon"><i data-lucide="moon" style="width:17px;height:17px"></i></div>
+        <div><b>Dark mode</b><span>Switch to a darker interface</span></div>
+      </div>
+      <button class="toggle" id="dark-toggle" aria-label="Toggle dark mode"></button>
+    </div>
+    <div class="pref-row">
+      <div class="pref-row-label">
+        <div class="pref-row-icon"><i data-lucide="bell" style="width:17px;height:17px"></i></div>
+        <div><b>Study reminders</b><span>Daily nudge to keep your streak</span></div>
+      </div>
+      <button class="toggle on" aria-label="Toggle study reminders"></button>
+    </div>
+  </div>
+
+  <a href="settings.html" style="display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--primary); font-weight:600; justify-content:center; padding:14px;">
+    All settings <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+  </a>
+</main>
+<script src="assets/app.js"></script>
+<script>
+  document.querySelectorAll('.toggle').forEach(t=>{
+    t.addEventListener('click', ()=> t.classList.toggle('on'));
+  });
+</script>
+</body>
+</html>

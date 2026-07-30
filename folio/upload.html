@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .upload-wrap{ max-width:720px; margin:0 auto; }
+  .upload-head{ text-align:center; margin-bottom:34px; }
+  .upload-head h1{ font-size:26px; margin-bottom:8px; }
+  .upload-head p{ color:var(--text-muted); font-size:14.5px; }
+
+  .dropzone{
+    position:relative; border:2px dashed var(--border-strong); border-radius:var(--r-xl);
+    background:var(--surface); padding:64px 32px; text-align:center;
+    transition:border-color var(--med), background var(--med), transform var(--fast);
+    cursor:pointer;
+  }
+  .dropzone.drag{ border-color:var(--primary); background:var(--primary-tint); transform:scale(1.01); }
+  .dz-icon{
+    width:76px; height:76px; border-radius:22px; margin:0 auto 22px;
+    background:var(--primary-tint); color:var(--primary);
+    display:flex; align-items:center; justify-content:center;
+    animation:dzfloat 3s ease-in-out infinite;
+  }
+  @keyframes dzfloat{ 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-8px)} }
+  .dropzone h3{ font-size:18px; margin-bottom:6px; }
+  .dropzone p{ color:var(--text-muted); font-size:13.5px; margin-bottom:20px; }
+  .dz-or{ color:var(--text-faint); font-size:12.5px; margin:14px 0; }
+  .dz-formats{ margin-top:22px; font-size:12px; color:var(--text-faint); }
+  input[type=file]{ display:none; }
+
+  .upload-list{ margin-top:24px; display:flex; flex-direction:column; gap:12px; }
+  .upload-item{ padding:18px 20px; display:flex; align-items:center; gap:14px; }
+  .upload-item .doc-icon{ width:42px; height:42px; border-radius:11px; background:var(--danger-tint); color:#C0392B; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .upload-item .grow{ flex:1; min-width:0; }
+  .upload-item .grow b{ font-size:14px; display:block; margin-bottom:6px; }
+  .upload-item .pct{ font-size:12px; color:var(--text-faint); margin-top:6px; display:flex; justify-content:space-between; }
+  .upload-track{ height:7px; background:var(--surface-sunken); border-radius:999px; overflow:hidden; }
+  .upload-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--primary), #7C74F0); border-radius:999px; transition:width 120ms linear; }
+  .upload-fill.done{ background:var(--success); }
+  .status-icon{ width:24px; height:24px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+
+  .recent-uploads{ margin-top:46px; }
+  .recent-uploads h2{ font-size:15px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html" class="active">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+      <button class="btn-icon" aria-label="Settings" onclick="window.location='settings.html'"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app-main">
+  <div class="upload-wrap">
+    <div class="upload-head">
+      <h1>Add a new book to your library</h1>
+      <p>Upload a PDF and Folio will read it, summarize it, and get it ready to chat and quiz.</p>
+    </div>
+
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a PDF">
+      <div class="dz-icon"><i data-lucide="upload-cloud" style="width:34px;height:34px"></i></div>
+      <h3>Drag & drop your PDF here</h3>
+      <p>or click to browse your files</p>
+      <label class="btn btn-primary" for="file-input">Choose PDF</label>
+      <input type="file" id="file-input" accept="application/pdf">
+      <div class="dz-formats">PDF only · Up to 100MB per file</div>
+    </div>
+
+    <div class="upload-list" id="upload-list"></div>
+
+    <div class="recent-uploads">
+      <h2>Recently added</h2>
+      <div class="upload-list">
+        <div class="card upload-item">
+          <div class="doc-icon" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text"></i></div>
+          <div class="grow"><b>Cell Biology.pdf</b><span style="font-size:12px; color:var(--text-faint);">21 pages · Added yesterday</span></div>
+          <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input');
+  const uploadList = document.getElementById('upload-list');
+
+  ['dragenter','dragover'].forEach(evt => dropzone.addEventListener(evt, e=>{
+    e.preventDefault(); dropzone.classList.add('drag');
+  }));
+  ['dragleave','drop'].forEach(evt => dropzone.addEventListener(evt, e=>{
+    e.preventDefault(); dropzone.classList.remove('drag');
+  }));
+  dropzone.addEventListener('drop', e=>{
+    const files = e.dataTransfer.files;
+    if (files.length) simulateUpload(files[0].name || 'Document.pdf');
+  });
+  dropzone.addEventListener('click', (e)=>{
+    if (e.target.tagName !== 'LABEL') fileInput.click();
+  });
+  dropzone.addEventListener('keypress', e=>{ if(e.key==='Enter') fileInput.click(); });
+  fileInput.addEventListener('change', ()=>{
+    if (fileInput.files.length) simulateUpload(fileInput.files[0].name);
+  });
+
+  function simulateUpload(name){
+    const item = document.createElement('div');
+    item.className = 'card upload-item';
+    item.innerHTML = `
+      <div class="doc-icon"><i data-lucide="file-text"></i></div>
+      <div class="grow">
+        <b>${name}</b>
+        <div class="upload-track"><div class="upload-fill"></div></div>
+        <div class="pct"><span class="status-label">Uploading…</span><span class="pct-num">0%</span></div>
+      </div>
+      <div class="status-icon"></div>
+    `;
+    uploadList.prepend(item);
+    lucide.createIcons();
+
+    const fill = item.querySelector('.upload-fill');
+    const pctNum = item.querySelector('.pct-num');
+    const statusLabel = item.querySelector('.status-label');
+    const statusIcon = item.querySelector('.status-icon');
+
+    let pct = 0;
+    const interval = setInterval(()=>{
+      pct += Math.random()*18;
+      if (pct >= 100){
+        pct = 100;
+        clearInterval(interval);
+        fill.classList.add('done');
+        statusLabel.textContent = 'Done';
+        statusIcon.innerHTML = '<i data-lucide="check-circle-2" style="color:var(--success); width:22px;height:22px"></i>';
+        lucide.createIcons();
+      }
+      fill.style.width = pct + '%';
+      pctNum.textContent = Math.floor(pct) + '%';
+    }, 220);
+  }
+</script>
+</body>
+</html>

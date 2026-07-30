@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .settings-shell{ max-width:760px; margin:0 auto; display:grid; grid-template-columns:200px 1fr; gap:32px; align-items:start; }
+  .settings-nav{ display:flex; flex-direction:column; gap:2px; position:sticky; top:90px; }
+  .settings-nav a{ padding:10px 14px; border-radius:10px; font-size:13.5px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:10px; transition:background var(--fast), color var(--fast); }
+  .settings-nav a:hover{ background:var(--surface-sunken); color:var(--text); }
+  .settings-nav a.active{ background:var(--primary-tint); color:var(--primary); }
+
+  .settings-title{ font-size:24px; margin-bottom:26px; }
+  .panel{ padding:26px 28px; margin-bottom:22px; }
+  .panel h2{ font-size:15.5px; margin-bottom:4px; }
+  .panel .panel-sub{ font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+
+  .theme-row{ display:flex; gap:14px; }
+  .theme-opt{ flex:1; border:1.5px solid var(--border-strong); border-radius:14px; padding:14px; cursor:pointer; transition:border-color var(--fast); }
+  .theme-opt.active{ border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-tint); }
+  .theme-preview{ height:64px; border-radius:9px; margin-bottom:10px; }
+  .theme-preview.light{ background:linear-gradient(180deg,#fff 0%,#F1F4F9 100%); border:1px solid var(--border); }
+  .theme-preview.dark{ background:linear-gradient(180deg,#1F2430 0%,#111420 100%); }
+  .theme-preview.system{ background:linear-gradient(90deg,#fff 50%,#1F2430 50%); }
+  .theme-opt span{ font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:6px; justify-content:center; }
+
+  .pref-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); }
+  .pref-row:last-child{ border-bottom:none; }
+  .pref-row-label b{ font-size:14px; display:block; }
+  .pref-row-label span{ font-size:12.5px; color:var(--text-faint); }
+  .toggle{ position:relative; width:44px; height:26px; border-radius:999px; background:var(--border-strong); flex-shrink:0; transition:background var(--fast); }
+  .toggle::after{ content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform var(--fast); box-shadow:var(--shadow-sm); }
+  .toggle.on{ background:var(--primary); }
+  .toggle.on::after{ transform:translateX(18px); }
+
+  .danger-panel{ border-color:var(--danger-tint); background:linear-gradient(180deg, #FFFDFD, #fff); }
+  .danger-row{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .danger-row p{ font-size:13px; color:var(--text-muted); max-width:420px; }
+
+  @media (max-width:760px){ .settings-shell{ grid-template-columns:1fr; } .settings-nav{ position:static; flex-direction:row; overflow-x:auto; } }
+</style>
+</head>
+<body>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main class="app-main">
+  <h1 class="settings-title">Settings</h1>
+  <div class="settings-shell">
+    <nav class="settings-nav">
+      <a href="#appearance" class="active"><i data-lucide="palette" style="width:15px;height:15px"></i> Appearance</a>
+      <a href="#notifications"><i data-lucide="bell" style="width:15px;height:15px"></i> Notifications</a>
+      <a href="#security"><i data-lucide="lock" style="width:15px;height:15px"></i> Password</a>
+      <a href="#danger"><i data-lucide="triangle-alert" style="width:15px;height:15px"></i> Danger zone</a>
+    </nav>
+
+    <div>
+      <div class="card panel" id="appearance">
+        <h2>Appearance</h2>
+        <p class="panel-sub">Choose how Folio looks on this device.</p>
+        <div class="theme-row">
+          <div class="theme-opt active" data-theme="light">
+            <div class="theme-preview light"></div>
+            <span><i data-lucide="sun" style="width:13px;height:13px"></i> Light</span>
+          </div>
+          <div class="theme-opt" data-theme="dark">
+            <div class="theme-preview dark"></div>
+            <span><i data-lucide="moon" style="width:13px;height:13px"></i> Dark</span>
+          </div>
+          <div class="theme-opt" data-theme="system">
+            <div class="theme-preview system"></div>
+            <span><i data-lucide="laptop" style="width:13px;height:13px"></i> System</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card panel" id="notifications">
+        <h2>Notifications</h2>
+        <p class="panel-sub">Control what Folio sends you.</p>
+        <div class="pref-row">
+          <div class="pref-row-label"><b>Daily study reminder</b><span>A nudge if you haven't studied yet today</span></div>
+          <button class="toggle on"></button>
+        </div>
+        <div class="pref-row">
+          <div class="pref-row-label"><b>Quiz results</b><span>Email a summary after each quiz</span></div>
+          <button class="toggle on"></button>
+        </div>
+        <div class="pref-row">
+          <div class="pref-row-label"><b>Product updates</b><span>New features and tips</span></div>
+          <button class="toggle"></button>
+        </div>
+      </div>
+
+      <div class="card panel" id="security">
+        <h2>Password</h2>
+        <p class="panel-sub">Update the password you use to log in.</p>
+        <div class="field">
+          <label for="cur-pw">Current password</label>
+          <input id="cur-pw" type="password" placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label for="new-pw">New password</label>
+          <input id="new-pw" type="password" placeholder="At least 8 characters">
+        </div>
+        <button class="btn btn-primary">Update Password</button>
+      </div>
+
+      <div class="card panel danger-panel" id="danger">
+        <h2 style="color:var(--danger);">Danger zone</h2>
+        <p class="panel-sub">These actions are permanent and cannot be undone.</p>
+        <div class="danger-row">
+          <p><b style="color:var(--text);">Delete account</b><br>Permanently remove your account, documents, chats, and quiz history.</p>
+          <button class="btn btn-danger-soft" id="delete-btn">Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+<script>
+  document.querySelectorAll('.toggle').forEach(t=> t.addEventListener('click', ()=> t.classList.toggle('on')));
+  document.querySelectorAll('.theme-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('.theme-opt').forEach(o=>o.classList.remove('active'));
+      opt.classList.add('active');
+    });
+  });
+  document.getElementById('delete-btn').addEventListener('click', ()=>{
+    if(confirm('This will permanently delete your account and all data. Are you sure?')){
+      alert('Account deletion requested. (Demo only — nothing was actually deleted.)');
+    }
+  });
+</script>
+</body>
+</html>

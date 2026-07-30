@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Fundamentals.pdf — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .breadcrumb{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-muted); margin-bottom:22px; }
+  .breadcrumb a:hover{ color:var(--text); }
+  .breadcrumb .sep{ color:var(--text-faint); }
+
+  .doc-hero{ padding:32px; display:flex; gap:24px; align-items:flex-start; margin-bottom:28px; flex-wrap:wrap; }
+  .doc-hero-icon{ width:76px; height:76px; border-radius:18px; background:var(--danger-tint); color:#C0392B; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .doc-hero-body{ flex:1; min-width:240px; }
+  .doc-hero-body h1{ font-size:23px; margin-bottom:10px; }
+  .doc-meta-row{ display:flex; gap:22px; flex-wrap:wrap; margin-bottom:16px; }
+  .doc-meta-item{ display:flex; align-items:center; gap:7px; font-size:13.5px; color:var(--text-muted); }
+  .doc-meta-item i{ width:16px; height:16px; color:var(--text-faint); }
+  .doc-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+
+  .content-grid{ display:grid; grid-template-columns:1.6fr 1fr; gap:24px; align-items:start; }
+  .panel{ padding:26px; margin-bottom:24px; }
+  .panel h2{ font-size:16px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .panel p{ color:var(--text-muted); font-size:14.5px; line-height:1.7; }
+
+  .toc-list{ display:flex; flex-direction:column; }
+  .toc-item{ display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid var(--border); font-size:14px; }
+  .toc-item:last-child{ border-bottom:none; }
+  .toc-item .num{ color:var(--text-faint); font-family:var(--font-display); font-weight:600; width:26px; }
+  .toc-item .name{ flex:1; }
+  .toc-item.done .name{ color:var(--text-muted); }
+  .toc-check{ width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .toc-check.done{ background:var(--success-tint); color:#067A55; }
+  .toc-check.pending{ border:1.5px solid var(--border-strong); }
+
+  .quick-quiz{ display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center; padding:28px 22px; }
+  .quick-quiz .score-ring-lg{ width:88px; height:88px; border-radius:50%; background:conic-gradient(var(--success) 90%, var(--surface-sunken) 0); display:flex; align-items:center; justify-content:center; }
+  .quick-quiz .score-ring-lg span{ width:72px; height:72px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:17px; }
+
+  .keyword-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .keyword-chip{ padding:6px 12px; border-radius:999px; background:var(--primary-tint); color:var(--primary-dark); font-size:12.5px; font-weight:600; }
+
+  @media (max-width:900px){ .content-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html" class="active">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+      <button class="btn-icon" aria-label="Settings" onclick="window.location='settings.html'"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app-main">
+  <div class="breadcrumb">
+    <a href="documents.html">My Library</a><span class="sep">/</span>
+    <a href="documents.html">Computer Science</a><span class="sep">/</span>
+    <span style="color:var(--text);">Java Fundamentals.pdf</span>
+  </div>
+
+  <div class="card doc-hero">
+    <div class="doc-hero-icon"><i data-lucide="file-text" style="width:32px;height:32px"></i></div>
+    <div class="doc-hero-body">
+      <h1>Java Fundamentals.pdf</h1>
+      <div class="doc-meta-row">
+        <span class="doc-meta-item"><i data-lucide="file-stack"></i>34 pages</span>
+        <span class="doc-meta-item"><i data-lucide="globe"></i>English</span>
+        <span class="doc-meta-item"><i data-lucide="calendar"></i>Uploaded Jul 24, 2026</span>
+        <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+      </div>
+      <div class="doc-actions">
+        <a href="chat.html" class="btn btn-primary"><i data-lucide="message-square-text" style="width:16px;height:16px"></i> Open Chat</a>
+        <a href="quiz.html" class="btn btn-soft"><i data-lucide="list-checks" style="width:16px;height:16px"></i> Generate Quiz</a>
+        <button class="btn-icon"><i data-lucide="download"></i></button>
+        <button class="btn-icon"><i data-lucide="trash-2"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div>
+      <div class="card panel">
+        <h2><i data-lucide="sparkles" style="width:17px;height:17px; color:var(--primary);"></i> AI Summary</h2>
+        <p>This document introduces core Java concepts: syntax, variables, and data types, then moves into object-oriented programming — classes, inheritance, and polymorphism. The final chapters cover exception handling and a short introduction to collections. Written for beginners with light prior programming experience.</p>
+      </div>
+      <div class="card panel">
+        <h2><i data-lucide="list-ordered" style="width:17px;height:17px; color:var(--primary);"></i> Chapters</h2>
+        <div class="toc-list">
+          <div class="toc-item done"><span class="toc-check done"><i data-lucide="check" style="width:11px;height:11px"></i></span><span class="name" style="margin-left:10px;">Introduction to Java</span></div>
+          <div class="toc-item done"><span class="toc-check done"><i data-lucide="check" style="width:11px;height:11px"></i></span><span class="name" style="margin-left:10px;">Variables & Data Types</span></div>
+          <div class="toc-item done"><span class="toc-check done"><i data-lucide="check" style="width:11px;height:11px"></i></span><span class="name" style="margin-left:10px;">Control Flow</span></div>
+          <div class="toc-item"><span class="toc-check pending"></span><span class="name" style="margin-left:10px;">Object-Oriented Programming</span></div>
+          <div class="toc-item"><span class="toc-check pending"></span><span class="name" style="margin-left:10px;">Inheritance & Polymorphism</span></div>
+          <div class="toc-item"><span class="toc-check pending"></span><span class="name" style="margin-left:10px;">Exception Handling</span></div>
+          <div class="toc-item"><span class="toc-check pending"></span><span class="name" style="margin-left:10px;">Collections Overview</span></div>
+        </div>
+      </div>
+      <div class="card panel">
+        <h2><i data-lucide="tags" style="width:17px;height:17px; color:var(--primary);"></i> Key Topics</h2>
+        <div class="keyword-chips">
+          <span class="keyword-chip">Classes</span>
+          <span class="keyword-chip">Inheritance</span>
+          <span class="keyword-chip">Polymorphism</span>
+          <span class="keyword-chip">Interfaces</span>
+          <span class="keyword-chip">Exceptions</span>
+          <span class="keyword-chip">Collections</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card quick-quiz">
+        <div class="score-ring-lg"><span>90%</span></div>
+        <div>
+          <h3 style="font-size:15px; margin-bottom:4px;">Last quiz score</h3>
+          <p style="font-size:13px; color:var(--text-muted);">15 questions · Taken yesterday</p>
+        </div>
+        <a href="quiz.html" class="btn btn-primary btn-block btn-sm">Retake Quiz</a>
+        <a href="quiz-result.html" class="btn btn-ghost btn-block btn-sm">Review Answers</a>
+      </div>
+      <div class="card panel">
+        <h2><i data-lucide="info" style="width:17px;height:17px; color:var(--primary);"></i> Details</h2>
+        <div class="toc-list">
+          <div class="toc-item"><span class="name">File size</span><span style="color:var(--text-muted);">4.2 MB</span></div>
+          <div class="toc-item"><span class="name">Reading time</span><span style="color:var(--text-muted);">~42 min</span></div>
+          <div class="toc-item"><span class="name">Difficulty</span><span style="color:var(--text-muted);">Beginner</span></div>
+          <div class="toc-item"><span class="name">Shelf</span><span style="color:var(--text-muted);">Computer Science</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

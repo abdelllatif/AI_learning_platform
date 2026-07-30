@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  body{ height:100vh; overflow:hidden; }
+  .auth-shell{ display:grid; grid-template-columns:1fr 1fr; height:100vh; }
+  .auth-form-col{ display:flex; flex-direction:column; justify-content:center; padding:56px 64px; overflow-y:auto; }
+  .auth-brand{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:19px; margin-bottom:44px; }
+  .auth-box{ max-width:380px; width:100%; margin:0 auto; }
+  .auth-box h1{ font-size:28px; margin-bottom:8px; }
+  .auth-box .sub{ color:var(--text-muted); font-size:14.5px; margin-bottom:28px; }
+  .divider{ display:flex; align-items:center; gap:14px; color:var(--text-faint); font-size:12.5px; margin:20px 0; }
+  .divider::before, .divider::after{ content:''; flex:1; height:1px; background:var(--border); }
+  .social-row{ display:flex; gap:10px; margin-bottom:20px; }
+  .social-btn{ flex:1; height:46px; border:1.5px solid var(--border-strong); border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:600; font-size:13.5px; transition:background var(--fast); }
+  .social-btn:hover{ background:var(--surface-sunken); }
+  .foot-link{ text-align:center; margin-top:22px; font-size:14px; color:var(--text-muted); }
+  .foot-link a{ color:var(--primary); font-weight:600; }
+  .name-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+  .auth-illu-col{
+    position:relative; overflow:hidden;
+    background:linear-gradient(155deg, #10B981 0%, #4F46E5 65%, #6D64EE 100%);
+    display:flex; align-items:center; justify-content:center; padding:60px;
+  }
+  .illu-glass{
+    position:relative; z-index:2; background:rgba(255,255,255,0.1); backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.25); border-radius:var(--r-xl);
+    padding:36px; max-width:400px; color:#fff; box-shadow:0 30px 60px rgba(0,0,0,0.2);
+  }
+  .illu-glass h2{ color:#fff; font-size:24px; margin-bottom:10px; }
+  .illu-glass p{ color:rgba(255,255,255,0.85); font-size:14.5px; margin-bottom:22px; }
+  .illu-list{ display:flex; flex-direction:column; gap:12px; }
+  .illu-list li{ display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; }
+  .illu-list i{ width:18px; height:18px; }
+  .blob{ position:absolute; border-radius:50%; filter:blur(2px); opacity:0.22; background:#fff; }
+  .blob1{ width:260px; height:260px; top:-70px; right:-60px; }
+  .blob2{ width:200px; height:200px; bottom:-50px; left:-50px; }
+
+  @media (max-width:900px){
+    .auth-shell{ grid-template-columns:1fr; }
+    .auth-illu-col{ display:none; }
+    body{ overflow:auto; }
+  }
+</style>
+</head>
+<body>
+<div class="auth-shell">
+  <div class="auth-form-col">
+    <div class="auth-box">
+      <a href="index.html" class="auth-brand">
+        <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+        Folio
+      </a>
+      <h1>Create your account</h1>
+      <p class="sub">Start turning your first PDF into a study guide.</p>
+
+      <div class="social-row">
+        <button type="button" class="social-btn"><i data-lucide="chrome" style="width:16px;height:16px"></i> Google</button>
+        <button type="button" class="social-btn"><i data-lucide="apple" style="width:16px;height:16px"></i> Apple</button>
+      </div>
+      <div class="divider">OR CONTINUE WITH EMAIL</div>
+
+      <form onsubmit="event.preventDefault(); window.location='dashboard.html';">
+        <div class="name-row">
+          <div class="field">
+            <label for="fname">First name</label>
+            <input id="fname" type="text" placeholder="Abdellatif" required>
+          </div>
+          <div class="field">
+            <label for="lname">Last name</label>
+            <input id="lname" type="text" placeholder="Amine" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="At least 8 characters" required>
+        </div>
+        <div class="field" style="margin-bottom:22px;">
+          <label class="checkbox-row"><input type="checkbox" required> I agree to the Terms and Privacy Policy</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create Account <i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
+      </form>
+
+      <p class="foot-link">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <div class="auth-illu-col">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="illu-glass">
+      <h2>Build your own library</h2>
+      <p>Every subject gets its own shelf. Every PDF becomes a book you can chat with and get quizzed on.</p>
+      <ul class="illu-list">
+        <li><i data-lucide="check-circle-2"></i> Unlimited PDF uploads</li>
+        <li><i data-lucide="check-circle-2"></i> AI chat grounded in your document</li>
+        <li><i data-lucide="check-circle-2"></i> Auto-generated quizzes</li>
+        <li><i data-lucide="check-circle-2"></i> Progress tracking across subjects</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

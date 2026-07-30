@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Java Fundamentals.pdf — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .quiz-shell{ max-width:700px; margin:0 auto; padding:44px 28px 80px; }
+  .quiz-topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .quiz-exit{ display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--text-muted); }
+  .quiz-exit:hover{ color:var(--text); }
+  .quiz-timer{ display:flex; align-items:center; gap:6px; font-size:13.5px; font-weight:700; color:var(--warning); background:var(--warning-tint); padding:6px 12px; border-radius:999px; }
+
+  .quiz-progress-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .quiz-progress-row span{ font-size:13px; font-weight:600; color:var(--text-muted); }
+  .progress-track{ height:8px; background:var(--surface-sunken); border-radius:999px; overflow:hidden; margin-bottom:36px; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--primary), #7C74F0); border-radius:999px; transition:width var(--med); }
+
+  .q-card{ padding:36px 32px; margin-bottom:22px; }
+  .q-eyebrow{ font-size:12px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+  .q-text{ font-size:20px; font-family:var(--font-display); font-weight:600; margin-bottom:26px; line-height:1.4; }
+  .choices{ display:flex; flex-direction:column; gap:12px; }
+  .choice{
+    display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:14px;
+    border:1.5px solid var(--border-strong); text-align:left; font-size:14.5px; font-weight:500;
+    transition:border-color var(--fast), background var(--fast), transform var(--fast);
+  }
+  .choice:hover{ border-color:var(--primary); background:var(--primary-tint); }
+  .choice .letter{ width:28px; height:28px; border-radius:8px; background:var(--surface-sunken); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; color:var(--text-muted); flex-shrink:0; }
+  .choice.selected{ border-color:var(--primary); background:var(--primary-tint); }
+  .choice.selected .letter{ background:var(--primary); color:#fff; }
+  .choice.correct{ border-color:var(--success); background:var(--success-tint); }
+  .choice.correct .letter{ background:var(--success); color:#fff; }
+  .choice.wrong{ border-color:var(--danger); background:var(--danger-tint); }
+  .choice.wrong .letter{ background:var(--danger); color:#fff; }
+  .choice:disabled{ cursor:default; }
+
+  .quiz-footer{ display:flex; justify-content:flex-end; }
+  .quiz-footer .btn{ min-width:150px; }
+
+  .dots-row{ display:flex; gap:6px; justify-content:center; margin-top:26px; flex-wrap:wrap; }
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--border-strong); }
+  .dot.current{ background:var(--primary); width:20px; border-radius:5px; }
+  .dot.answered{ background:var(--success); }
+</style>
+</head>
+<body>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="documents.html">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html" class="active">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main class="quiz-shell">
+  <div class="quiz-topbar">
+    <a href="document.html" class="quiz-exit"><i data-lucide="x" style="width:16px;height:16px"></i> Exit quiz</a>
+    <div class="quiz-timer"><i data-lucide="timer" style="width:14px;height:14px"></i> <span id="timer">00:00</span></div>
+  </div>
+
+  <div class="quiz-progress-row">
+    <span id="q-counter">Question 1/8</span>
+    <span id="q-score-live">0 correct</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:12.5%;"></div></div>
+
+  <div class="card q-card">
+    <div class="q-eyebrow">Java Fundamentals.pdf · Chapter 5</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <div class="quiz-footer">
+    <button class="btn btn-primary" id="next-btn" disabled>Next Question <i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
+  </div>
+
+  <div class="dots-row" id="dots"></div>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+const questions = [
+  { q:"What does polymorphism allow in Java?", choices:["A method to behave differently based on the calling object","A class to have only one constructor","Variables to change data type at runtime","Two classes to share the same name"], correct:0 },
+  { q:"Which keyword is used to inherit a class in Java?", choices:["implements","extends","inherits","super"], correct:1 },
+  { q:"What is the main difference between an interface and an abstract class?", choices:["Interfaces can have constructors","A class can implement multiple interfaces but extend only one class","Abstract classes cannot have any methods","Interfaces are only used for exceptions"], correct:1 },
+  { q:"Which block is used to handle exceptions in Java?", choices:["try / catch","if / else","for / while","switch / case"], correct:0 },
+  { q:"What does the 'final' keyword do to a variable?", choices:["Deletes the variable","Makes it accessible everywhere","Prevents its value from being changed","Converts it to a constant class"], correct:2 },
+  { q:"Which collection type does not allow duplicate elements?", choices:["List","Set","Array","Queue"], correct:1 },
+  { q:"What is method overriding?", choices:["Defining multiple methods with the same name but different parameters","A subclass providing its own implementation of a parent method","Creating a method inside an interface","Calling a method twice"], correct:1 },
+  { q:"Which access modifier restricts a member to its own class only?", choices:["public","protected","private","default"], correct:2 },
+];
+
+let current = 0, score = 0, answered = new Array(questions.length).fill(null);
+const qText = document.getElementById('q-text');
+const choicesEl = document.getElementById('choices');
+const nextBtn = document.getElementById('next-btn');
+const progressFill = document.getElementById('progress-fill');
+const qCounter = document.getElementById('q-counter');
+const scoreLive = document.getElementById('q-score-live');
+const dotsEl = document.getElementById('dots');
+
+function renderDots(){
+  dotsEl.innerHTML = questions.map((_,i)=>{
+    let cls = 'dot';
+    if(i === current) cls += ' current';
+    else if(answered[i] !== null) cls += ' answered';
+    return `<span class="${cls}"></span>`;
+  }).join('');
+}
+
+function renderQuestion(){
+  const item = questions[current];
+  qText.textContent = item.q;
+  qCounter.textContent = `Question ${current+1}/${questions.length}`;
+  scoreLive.textContent = `${score} correct`;
+  progressFill.style.width = `${((current)/questions.length)*100 + (100/questions.length)}%`;
+  nextBtn.disabled = true;
+  nextBtn.textContent = current === questions.length-1 ? 'See Results' : 'Next Question';
+  if(current === questions.length-1){
+    nextBtn.innerHTML = 'See Results <i data-lucide="flag" style="width:16px;height:16px"></i>';
+  } else {
+    nextBtn.innerHTML = 'Next Question <i data-lucide="arrow-right" style="width:16px;height:16px"></i>';
+  }
+
+  choicesEl.innerHTML = item.choices.map((c,i)=>`
+    <button class="choice" data-i="${i}">
+      <span class="letter">${String.fromCharCode(65+i)}</span>
+      <span>${c}</span>
+    </button>
+  `).join('');
+
+  const alreadyAnswered = answered[current];
+  foliQSA('.choice', choicesEl).forEach(btn=>{
+    btn.addEventListener('click', ()=> selectChoice(btn, item));
+    if(alreadyAnswered !== null) lockChoices(item, alreadyAnswered);
+  });
+  lucide.createIcons();
+  renderDots();
+}
+
+function selectChoice(btn, item){
+  if(answered[current] !== null) return;
+  const i = parseInt(btn.dataset.i);
+  answered[current] = i;
+  if(i === item.correct) score++;
+  lockChoices(item, i);
+  nextBtn.disabled = false;
+  scoreLive.textContent = `${score} correct`;
+  renderDots();
+}
+
+function lockChoices(item, chosenIndex){
+  foliQSA('.choice', choicesEl).forEach(b=>{
+    const i = parseInt(b.dataset.i);
+    b.disabled = true;
+    if(i === item.correct) b.classList.add('correct');
+    else if(i === chosenIndex) b.classList.add('wrong');
+  });
+  nextBtn.disabled = false;
+}
+
+nextBtn.addEventListener('click', ()=>{
+  if(current < questions.length-1){
+    current++;
+    renderQuestion();
+  } else {
+    sessionStorage.setItem('folio_quiz_score', JSON.stringify({ score, total: questions.length }));
+    window.location = 'quiz-result.html';
+  }
+});
+
+renderQuestion();
+
+// timer
+let seconds = 0;
+setInterval(()=>{
+  seconds++;
+  const m = String(Math.floor(seconds/60)).padStart(2,'0');
+  const s = String(seconds%60).padStart(2,'0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+}, 1000);
+</script>
+</body>
+</html>

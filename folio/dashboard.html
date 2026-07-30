@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Folio</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<style>
+  .greet-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; flex-wrap:wrap; gap:16px; }
+  .greet-row h1{ font-size:28px; margin-bottom:6px; }
+  .greet-row p{ color:var(--text-muted); font-size:14.5px; }
+
+  .stat-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:44px; }
+  .stat-card{ padding:22px 22px; display:flex; align-items:center; gap:14px; }
+  .stat-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .stat-card b{ display:block; font-family:var(--font-display); font-size:22px; }
+  .stat-card span{ font-size:12.5px; color:var(--text-muted); }
+
+  .section-title-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .section-title-row h2{ font-size:18px; }
+  .section-title-row a{ font-size:13.5px; font-weight:600; color:var(--primary); display:flex; align-items:center; gap:4px; }
+  section.dash-block{ margin-bottom:48px; }
+
+  .continue-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .continue-card{ padding:20px; display:flex; flex-direction:column; gap:12px; transition:box-shadow var(--fast), transform var(--fast); }
+  .continue-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-2px); }
+  .continue-top{ display:flex; gap:12px; align-items:center; }
+  .doc-thumb{ width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .continue-top div b{ display:block; font-size:14px; }
+  .continue-top div span{ font-size:12px; color:var(--text-faint); }
+  .progress-track{ height:7px; background:var(--surface-sunken); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--primary), #7C74F0); border-radius:999px; }
+  .continue-meta{ display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); }
+
+  .doc-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .doc-card{ padding:20px; display:flex; flex-direction:column; gap:14px; transition:box-shadow var(--fast), transform var(--fast); }
+  .doc-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-2px); }
+  .doc-card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .doc-icon{ width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+  .doc-card h3{ font-size:14.5px; margin-bottom:3px; }
+  .doc-card .meta{ font-size:12px; color:var(--text-faint); }
+
+  .upload-tile{
+    border:1.5px dashed var(--border-strong); border-radius:var(--r-lg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    padding:20px; text-align:center; color:var(--text-muted); transition:background var(--fast), border-color var(--fast);
+    min-height:172px;
+  }
+  .upload-tile:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary); }
+  .upload-tile .doc-icon{ background:var(--primary-tint); color:var(--primary); }
+
+  .chat-list{ display:flex; flex-direction:column; gap:10px; }
+  .chat-row{ padding:16px 18px; display:flex; align-items:center; gap:14px; transition:box-shadow var(--fast); }
+  .chat-row:hover{ box-shadow:var(--shadow-md); }
+  .chat-row .doc-thumb{ width:40px; height:40px; }
+  .chat-row .grow{ flex:1; min-width:0; }
+  .chat-row .grow b{ font-size:14px; display:block; }
+  .chat-row .grow p{ font-size:12.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chat-row .time{ font-size:12px; color:var(--text-faint); flex-shrink:0; }
+
+  .quiz-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .quiz-card{ padding:20px; display:flex; align-items:center; gap:16px; }
+  .score-ring{ width:56px; height:56px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:13px; }
+  .quiz-card h3{ font-size:14px; margin-bottom:3px; }
+  .quiz-card span{ font-size:12px; color:var(--text-faint); }
+
+  @media (max-width:1080px){
+    .stat-strip{ grid-template-columns:repeat(2,1fr); }
+    .continue-row{ grid-template-columns:1fr 1fr; }
+    .doc-grid{ grid-template-columns:1fr 1fr; }
+    .quiz-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-mark"><i data-lucide="book-open" style="width:17px;height:17px"></i></span>
+      Folio
+    </a>
+    <nav class="nav-links">
+      <a href="dashboard.html" class="active">Home</a>
+      <a href="documents.html">Library</a>
+      <a href="chat.html">Chats</a>
+      <a href="quiz.html">Quizzes</a>
+      <a href="upload.html">Upload</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-icon" aria-label="Notifications"><i data-lucide="bell"></i></button>
+      <button class="btn-icon" aria-label="Settings" onclick="window.location='settings.html'"><i data-lucide="settings"></i></button>
+      <a href="profile.html" class="avatar">A</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="app-main">
+  <div class="greet-row">
+    <div>
+      <h1>Good evening, Abdellatif 👋</h1>
+      <p>You've studied 3 days in a row. Let's keep it going.</p>
+    </div>
+    <a href="upload.html" class="btn btn-primary"><i data-lucide="plus" style="width:16px;height:16px"></i> Upload PDF</a>
+  </div>
+
+  <div class="stat-strip">
+    <div class="card stat-card">
+      <div class="stat-icon" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="library"></i></div>
+      <div><b>14</b><span>Documents</span></div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon" style="background:var(--success-tint); color:#067A55;"><i data-lucide="message-square-text"></i></div>
+      <div><b>27</b><span>Chats</span></div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon" style="background:var(--warning-tint); color:#9A6205;"><i data-lucide="list-checks"></i></div>
+      <div><b>19</b><span>Quizzes taken</span></div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon" style="background:var(--primary-tint-2); color:var(--primary-dark);"><i data-lucide="flame"></i></div>
+      <div><b>3-day</b><span>Study streak</span></div>
+    </div>
+  </div>
+
+  <section class="dash-block">
+    <div class="section-title-row">
+      <h2>Continue learning</h2>
+      <a href="documents.html">View all <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a>
+    </div>
+    <div class="continue-row">
+      <a href="document.html" class="card continue-card">
+        <div class="continue-top">
+          <div class="doc-thumb" style="background:var(--danger-tint); color:#C0392B;"><i data-lucide="file-text"></i></div>
+          <div><b>Java Fundamentals.pdf</b><span>Chapter 4 of 9</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:64%;"></div></div>
+        <div class="continue-meta"><span>64% complete</span><span>34 pages</span></div>
+      </a>
+      <a href="document.html" class="card continue-card">
+        <div class="continue-top">
+          <div class="doc-thumb" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="file-text"></i></div>
+          <div><b>Linear Algebra.pdf</b><span>Chapter 2 of 6</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:32%;"></div></div>
+        <div class="continue-meta"><span>32% complete</span><span>58 pages</span></div>
+      </a>
+      <a href="document.html" class="card continue-card">
+        <div class="continue-top">
+          <div class="doc-thumb" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text"></i></div>
+          <div><b>Cell Biology.pdf</b><span>Chapter 6 of 7</span></div>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:88%;"></div></div>
+        <div class="continue-meta"><span>88% complete</span><span>21 pages</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="dash-block">
+    <div class="section-title-row">
+      <h2>Recent documents</h2>
+      <a href="documents.html">View all <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a>
+    </div>
+    <div class="doc-grid">
+      <a href="upload.html" class="upload-tile">
+        <div class="doc-icon"><i data-lucide="upload-cloud"></i></div>
+        <b>Upload PDF</b>
+        <span style="font-size:12px;">Drag & drop or browse</span>
+      </a>
+      <a href="document.html" class="card doc-card">
+        <div class="doc-card-top">
+          <div class="doc-icon" style="background:var(--danger-tint); color:#C0392B;"><i data-lucide="file-text"></i></div>
+          <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        </div>
+        <div><h3>Java Fundamentals.pdf</h3><span class="meta">34 pages · English</span></div>
+      </a>
+      <a href="document.html" class="card doc-card">
+        <div class="doc-card-top">
+          <div class="doc-icon" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="file-text"></i></div>
+          <span class="badge badge-success"><span class="badge-dot"></span>Ready</span>
+        </div>
+        <div><h3>Linear Algebra.pdf</h3><span class="meta">58 pages · English</span></div>
+      </a>
+      <a href="document.html" class="card doc-card">
+        <div class="doc-card-top">
+          <div class="doc-icon" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text"></i></div>
+          <span class="badge badge-warning"><span class="badge-dot"></span>Processing</span>
+        </div>
+        <div><h3>Cell Biology.pdf</h3><span class="meta">21 pages · English</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="dash-block">
+    <div class="section-title-row">
+      <h2>Recent chats</h2>
+      <a href="chat.html">View all <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a>
+    </div>
+    <div class="chat-list">
+      <a href="chat.html" class="card chat-row">
+        <div class="doc-thumb" style="background:var(--danger-tint); color:#C0392B;"><i data-lucide="file-text" style="width:18px;height:18px"></i></div>
+        <div class="grow"><b>Java Fundamentals.pdf</b><p>"Can you explain polymorphism with a simple example?"</p></div>
+        <span class="time">2h ago</span>
+      </a>
+      <a href="chat.html" class="card chat-row">
+        <div class="doc-thumb" style="background:var(--primary-tint); color:var(--primary);"><i data-lucide="file-text" style="width:18px;height:18px"></i></div>
+        <div class="grow"><b>Linear Algebra.pdf</b><p>"What's the difference between eigenvalues and eigenvectors?"</p></div>
+        <span class="time">Yesterday</span>
+      </a>
+      <a href="chat.html" class="card chat-row">
+        <div class="doc-thumb" style="background:var(--success-tint); color:#067A55;"><i data-lucide="file-text" style="width:18px;height:18px"></i></div>
+        <div class="grow"><b>Cell Biology.pdf</b><p>"Summarize the process of mitosis in 4 steps."</p></div>
+        <span class="time">2 days ago</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="dash-block">
+    <div class="section-title-row">
+      <h2>Recent quizzes</h2>
+      <a href="quiz.html">View all <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a>
+    </div>
+    <div class="quiz-grid">
+      <a href="quiz-result.html" class="card quiz-card">
+        <div class="score-ring" style="background:var(--success-tint); color:#067A55;">90%</div>
+        <div><h3>Java Fundamentals</h3><span>15 questions · Yesterday</span></div>
+      </a>
+      <a href="quiz-result.html" class="card quiz-card">
+        <div class="score-ring" style="background:var(--warning-tint); color:#9A6205;">68%</div>
+        <div><h3>Linear Algebra</h3><span>10 questions · 3 days ago</span></div>
+      </a>
+      <a href="quiz-result.html" class="card quiz-card">
+        <div class="score-ring" style="background:var(--success-tint); color:#067A55;">95%</div>
+        <div><h3>Cell Biology</h3><span>12 questions · 5 days ago</span></div>
+      </a>
+    </div>
+  </section>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>
