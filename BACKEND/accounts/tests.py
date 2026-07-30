@@ -63,3 +63,23 @@ class AccountsTests(APITestCase):
 
         refresh_response = self.client.post(self.refresh_url, {'refresh': refresh_token}, format='json')
         self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_register_and_verify_email(self):
+        data = {
+            'username': 'verifyuser',
+            'email': 'verify@example.com',
+            'password': 'StrongPassword123!',
+            'email_verification': True,
+        }
+        response = self.client.post(self.register_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('verification_token', response.data)
+
+        verify_url = '/api/auth/verify-email/'
+        token = response.data['verification_token']
+        verify_response = self.client.post(verify_url, {'token': token}, format='json')
+        self.assertEqual(verify_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(verify_response.data['message'], 'Email verified successfully.')
+
+        token_response = self.client.post(self.token_url, {'username': 'verifyuser', 'password': 'StrongPassword123!'}, format='json')
+        self.assertEqual(token_response.status_code, status.HTTP_200_OK)

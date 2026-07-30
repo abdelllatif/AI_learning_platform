@@ -1,10 +1,13 @@
-﻿from rest_framework import status
+﻿from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
+from .models import EmailVerification
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
@@ -17,12 +20,39 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "User created successfully"},
-                status=status.HTTP_201_CREATED,
-            )
+            user = serializer.save()
+            email_verification_requested = request.data.get("email_verification", False)
+            response_data = {"message": "User created successfully"}
+
+            if email_verification_requested:
+                verification = EmailVerification.objects.create(user=user)
+                response_data["verification_token"] = verification.token
+                response_data["note"] = "Use this token to verify the email at /api/auth/verify-email/."
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyEmailView(APIView):
+    def post(self, request):
+        token = request.data.get("token")
+        if not token:
+            return Response({"token": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        verification = get_object_or_404(EmailVerification, token=token)
+        if verification.verified:
+            return Response({"message": "Email already verified."}, status=status.HTTP_200_OK)
+
+        verification.verified = True
+        verification.verified_at = timezone.now()
+        verification.save()
+
+        user = verification.user
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+
+        return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
