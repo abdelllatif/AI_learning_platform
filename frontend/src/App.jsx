@@ -11,6 +11,8 @@ import Settings from './pages/Settings'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Landing from './pages/Landing'
+import Footer from './components/Footer'
 
 export default function App(){
   return (
@@ -20,7 +22,7 @@ export default function App(){
         <aside className="sidebar"><Sidebar /></aside>
         <main className="main">
           <Routes>
-            <Route path="/" element={<Dashboard/>} />
+            <Route path="/" element={<Landing/>} />
             <Route path="/dashboard" element={<Dashboard/>} />
             <Route path="/documents" element={<Documents/>} />
             <Route path="/upload" element={<Upload/>} />
@@ -33,6 +35,7 @@ export default function App(){
           </Routes>
         </main>
       </div>
+      <Footer />
     </div>
   )
 }
