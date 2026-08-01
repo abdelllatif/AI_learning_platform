@@ -15,6 +15,8 @@ class DocumentSerializer(serializers.ModelSerializer):
             "title",
             "file",
             "language",
+            "pages",
+            "checksum",
             "status",
             "uploaded_at",
             "owner",
@@ -22,6 +24,9 @@ class DocumentSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "owner",
             "uploaded_at",
+            "pages",
+            "checksum",
+            "status",
         )
 
     def validate_file(self, value):

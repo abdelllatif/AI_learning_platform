@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from .models import Document
 from .serializers import DocumentSerializer
+from ai_engine.agents.validator_agent import validate_pdf
 from ai_engine.orchestrator.ai_pipeline import start_document_processing
 
 
@@ -16,9 +17,21 @@ class DocumentUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        upload_file = request.FILES.get("file")
+        if not upload_file:
+            return Response({"file": ["PDF file is required."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        validation = validate_pdf(upload_file, owner=request.user)
+        if not validation["valid"]:
+            return Response({"file": validation["errors"]}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = DocumentSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
-            document = serializer.save(owner=request.user)
+            document = serializer.save(
+                owner=request.user,
+                pages=validation.get("pages"),
+                checksum=validation.get("checksum"),
+            )
             document.status = Document.STATUS_PROCESSING
             document.save(update_fields=["status"])
             start_document_processing(document)

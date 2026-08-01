@@ -24,6 +24,23 @@ class Document(models.Model):
         blank=True
     )
 
+    pages = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+
+    checksum = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+
+    text_content = models.TextField(
+        blank=True,
+        null=True,
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
