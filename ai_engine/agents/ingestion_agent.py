@@ -1,10 +1,11 @@
 from documents.models import Document
 from ai_engine.agents.validator_agent import validate_pdf
 from ai_engine.parser.pdf_parser import parse_pdf
+from ai_engine.parser.text_cleaner import clean_text
 
 
 def ingest_document(document: Document) -> None:
-    """Validate and parse the document text for the AI pipeline."""
+    """Validate, parse, OCR fallback, and clean document text."""
     with document.file.open("rb") as fd:
         validation = validate_pdf(fd, owner=document.owner)
 
@@ -15,9 +16,6 @@ def ingest_document(document: Document) -> None:
     document.checksum = validation.get("checksum")
     document.save(update_fields=["pages", "checksum"])
 
-    try:
-        text = parse_pdf(document.file.path)
-        document.text_content = text
-        document.save(update_fields=["text_content"])
-    except Exception:
-        raise
+    text = parse_pdf(document.file.path)
+    document.text_content = clean_text(text)
+    document.save(update_fields=["text_content"])
