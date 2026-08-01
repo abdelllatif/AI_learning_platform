@@ -30,22 +30,19 @@ class ChatListCreateView(generics.ListCreateAPIView):
 
 class ChatDetailView(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Chat.objects.all()
     serializer_class = ChatDetailSerializer
 
-    def get_object(self):
-        obj = get_object_or_404(Chat, pk=self.kwargs["pk"], owner=self.request.user)
-        return obj
+    def get_queryset(self):
+        return Chat.objects.filter(owner=self.request.user)
 
 
 class ChatRenameView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChatSerializer
-    queryset = Chat.objects.all()
     http_method_names = ["patch"]
 
-    def get_object(self):
-        return get_object_or_404(Chat, pk=self.kwargs["pk"], owner=self.request.user)
+    def get_queryset(self):
+        return Chat.objects.filter(owner=self.request.user)
 
 
 class MessageListView(generics.ListAPIView):

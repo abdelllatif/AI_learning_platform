@@ -38,19 +38,9 @@ class DocumentSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        request = self.context.get("request")
-        uploaded_file = attrs.get("file")
-        if request and request.user.is_authenticated and uploaded_file:
-            title = os.path.splitext(uploaded_file.name)[0]
-            if Document.objects.filter(owner=request.user, title=title).exists():
-                raise serializers.ValidationError(
-                    {"file": "A document with this name already exists."}
-                )
         return attrs
 
     def create(self, validated_data):
-        upload = validated_data.get("file")
-        title = os.path.splitext(upload.name)[0]
         if not validated_data.get("title"):
-            validated_data["title"] = title
+            validated_data["title"] = "Untitled document"
         return super().create(validated_data)

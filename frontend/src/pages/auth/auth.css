@@ -1,0 +1,360 @@
+/* ==========================================================================
+   Shared styles for the auth pages (Login + Register)
+   Relies on the design tokens already defined globally, e.g.:
+   --primary, --border, --border-strong, --text-muted, --text-faint,
+   --surface-sunken, --font-display, --fast, --r-xl
+   ========================================================================== */
+
+.auth-page {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.auth-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  min-height: 0;
+}
+
+/* margin:auto on .auth-box centers when it fits; when content overflows,
+   auto margins collapse so the logo stays reachable at the top (unlike
+   justify-content:center, which clips the top of overflowing flex children). */
+.auth-form-col {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 64px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+}
+
+.auth-form-col::-webkit-scrollbar {
+  display: none;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  margin-bottom: 36px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.auth-box {
+  max-width: 380px;
+  width: 100%;
+  margin: auto;
+  flex-shrink: 0;
+}
+
+.auth-box h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.auth-box .sub {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-bottom: 32px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--text-faint);
+  font-size: 12.5px;
+  margin: 22px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.social-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.social-btn {
+  flex: 1;
+  height: 46px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: background var(--fast);
+  background: transparent;
+  cursor: pointer;
+}
+
+.social-btn:hover {
+  background: var(--surface-sunken);
+}
+
+.foot-link {
+  text-align: center;
+  margin-top: 26px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.foot-link a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.row-between a {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ---------- illustration column ---------- */
+
+.auth-illu-col {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: linear-gradient(155deg, var(--primary) 0%, #6D64EE 55%, #8B84F5 100%);
+}
+
+.auth-illu-col.register {
+  background: linear-gradient(155deg, #10B981 0%, #4F46E5 65%, #6D64EE 100%);
+}
+
+.illu-glass {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--r-xl);
+  padding: 36px;
+  max-width: 400px;
+  color: #fff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+}
+
+.illu-glass h2 {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.illu-glass p {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14.5px;
+  margin-bottom: 24px;
+}
+
+.illu-stat-row {
+  display: flex;
+  gap: 14px;
+}
+
+.illu-stat {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.illu-stat b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.illu-stat span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.illu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.illu-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.illu-list svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.25;
+  background: #fff;
+}
+
+.blob1 {
+  width: 260px;
+  height: 260px;
+  top: -60px;
+  left: -60px;
+}
+
+.blob2 {
+  width: 180px;
+  height: 180px;
+  bottom: -40px;
+  right: -30px;
+}
+
+.auth-illu-col.register .blob1 {
+  left: auto;
+  right: -60px;
+  top: -70px;
+  opacity: 0.22;
+}
+
+.auth-illu-col.register .blob2 {
+  right: auto;
+  left: -50px;
+  bottom: -50px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.22;
+}
+
+.float-doc {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 2;
+}
+
+.float-doc svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.fd1 {
+  top: 14%;
+  right: 10%;
+  animation: bob1 5s ease-in-out infinite;
+}
+
+.fd2 {
+  bottom: 16%;
+  left: 6%;
+  animation: bob2 6s ease-in-out infinite;
+}
+
+@keyframes bob1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes bob2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  min-height: 17px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-illu-col {
+    display: none;
+  }
+
+  .auth-page {
+    overflow: auto;
+  }
+
+  .auth-form-col {
+    padding: 32px 24px;
+  }
+}

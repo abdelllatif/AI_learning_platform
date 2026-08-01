@@ -3,17 +3,19 @@ import { Link } from 'react-router-dom'
 
 export default function Footer(){
   return (
-    <footer className="landing-footer">
-      <div className="landing-footer-inner">
-        <div className="landing-footer-brand">
-          <div>Folio</div>
-          <nav>
-            <a href="#how">How it works</a>
-            <a href="#features">Features</a>
-            <Link to="/login">Login</Link>
-          </nav>
+    <footer>
+      <div className="footer-inner">
+        <Link to="/dashboard" className="brand">
+          <span className="brand-mark"><i data-lucide="book-open" style={{ width: 17, height: 17 }}></i></span>
+          Folio
+        </Link>
+        <div className="footer-links">
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <Link to="/login">Login</Link>
+          <Link to="/register">Get Started</Link>
         </div>
-        <div className="landing-footer-copy">© {new Date().getFullYear()} Folio — Built for learning</div>
+        <span style={{ color: 'var(--text-faint)', fontSize: '13px' }}>© {new Date().getFullYear()} Folio</span>
       </div>
     </footer>
   )

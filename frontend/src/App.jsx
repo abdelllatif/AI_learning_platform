@@ -1,46 +1,63 @@
 import React from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Nav from './components/Nav'
-import Sidebar from './components/Sidebar'
-import Dashboard from './pages/Dashboard'
-import Documents from './pages/Documents'
-import Upload from './pages/Upload'
-import Chat from './pages/Chat'
-import Quiz from './pages/Quiz'
-import Settings from './pages/Settings'
-import Profile from './pages/Profile'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Landing from './pages/Landing'
-import Footer from './components/Footer'
+import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './pages/dashboard/Dashboard'
+import Documents from './pages/documents/Documents'
+import Document from './pages/documents/Document'
+import Upload from './pages/upload/Upload'
+import Chat from './pages/chat/Chat'
+import Quiz from './pages/quiz/Quiz'
+import QuizResult from './pages/quiz/QuizResult'
+import Settings from './pages/settings/Settings'
+import Profile from './pages/profile/Profile'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import Landing from './pages/landing/Landing'
 
-export default function App(){
+function Guard({ children }) {
+  return <ProtectedRoute>{children}</ProtectedRoute>
+}
+
+export default function App() {
   const location = useLocation()
-  const hideSidebar = location.pathname === '/'
+
+  const noLayoutRoutes = ['/', '/login', '/register']
+  const hideLayout = noLayoutRoutes.includes(location.pathname)
+  const fullBleedRoutes = ['/chat', '/quiz']
+  const isFullBleed = fullBleedRoutes.some(
+    path => location.pathname === path || location.pathname.startsWith(`${path}/`)
+  )
+
+  const routes = (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/dashboard" element={<Guard><Dashboard /></Guard>} />
+      <Route path="/documents" element={<Guard><Documents /></Guard>} />
+      <Route path="/document/:id" element={<Guard><Document /></Guard>} />
+      <Route path="/upload" element={<Guard><Upload /></Guard>} />
+      <Route path="/chat" element={<Guard><Chat /></Guard>} />
+      <Route path="/chat/:id" element={<Guard><Chat /></Guard>} />
+      <Route path="/quiz" element={<Guard><Quiz /></Guard>} />
+      <Route path="/quiz/result" element={<Guard><QuizResult /></Guard>} />
+      <Route path="/quiz/:id" element={<Guard><Quiz /></Guard>} />
+      <Route path="/settings" element={<Guard><Settings /></Guard>} />
+      <Route path="/profile" element={<Guard><Profile /></Guard>} />
+    </Routes>
+  )
+
+  if (hideLayout) {
+    return routes
+  }
 
   return (
-    <div>
-      <div className="topnav"><Nav /></div>
-      <div className="app-shell">
-        {!hideSidebar && (
-          <aside className="sidebar"><Sidebar /></aside>
-        )}
-        <main className="main">
-          <Routes>
-            <Route path="/" element={<Landing/>} />
-            <Route path="/dashboard" element={<Dashboard/>} />
-            <Route path="/documents" element={<Documents/>} />
-            <Route path="/upload" element={<Upload/>} />
-            <Route path="/chat" element={<Chat/>} />
-            <Route path="/quiz" element={<Quiz/>} />
-            <Route path="/settings" element={<Settings/>} />
-            <Route path="/profile" element={<Profile/>} />
-            <Route path="/login" element={<Login/>} />
-            <Route path="/register" element={<Register/>} />
-          </Routes>
-        </main>
-      </div>
-      <Footer />
+    <div className={isFullBleed ? 'app-layout-bleed' : undefined}>
+      <header className="topnav" style={isFullBleed ? { flexShrink: 0 } : undefined}>
+        <Nav />
+      </header>
+      {isFullBleed ? routes : <main className="app-main">{routes}</main>}
     </div>
   )
 }

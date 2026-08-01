@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from documents.models import Document
 from .models import Chat, Message
 
 
@@ -17,12 +18,53 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(
+        queryset=Document.objects.all(),
+        required=False,
+        allow_null=True,
+    )
+    document_title = serializers.CharField(source="document.title", read_only=True)
     last_message = serializers.SerializerMethodField()
 
     class Meta:
         model = Chat
-        fields = ["id", "title", "owner", "created_at", "updated_at", "last_message"]
-        read_only_fields = ["id", "owner", "created_at", "updated_at", "last_message"]
+        fields = [
+            "id",
+            "title",
+            "owner",
+            "document",
+            "document_title",
+            "created_at",
+            "updated_at",
+            "last_message",
+        ]
+        read_only_fields = [
+            "id",
+            "owner",
+            "created_at",
+            "updated_at",
+            "last_message",
+            "document_title",
+        ]
+
+    def validate_document(self, value):
+        request = self.context.get("request")
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("Authentication required.")
+        if value and value.owner != request.user:
+            raise serializers.ValidationError("Document does not belong to you.")
+        if value and (value.status or "").upper() != "READY":
+            raise serializers.ValidationError("Document must be READY to start a chat.")
+        return value
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        if not self.instance and attrs.get("document") is None:
+            raise serializers.ValidationError({"document": "Document is required to create a chat."})
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
 
     def get_last_message(self, obj):
         last = obj.messages.order_by("created_at").last()
@@ -32,9 +74,20 @@ class ChatSerializer(serializers.ModelSerializer):
 
 
 class ChatDetailSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(read_only=True)
+    document_title = serializers.CharField(source="document.title", read_only=True)
     messages = MessageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Chat
-        fields = ["id", "title", "owner", "created_at", "updated_at", "messages"]
-        read_only_fields = ["id", "owner", "created_at", "updated_at", "messages"]
+        fields = [
+            "id",
+            "title",
+            "owner",
+            "document",
+            "document_title",
+            "created_at",
+            "updated_at",
+            "messages",
+        ]
+        read_only_fields = ["id", "owner", "created_at", "updated_at", "messages", "document_title"]

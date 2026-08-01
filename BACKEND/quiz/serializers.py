@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from documents.models import Document
 from .models import Quiz, Question, Answer, QuizAttempt, AttemptAnswer
 
 
@@ -24,12 +25,34 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuizSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+    document_title = serializers.CharField(source="document.title", read_only=True)
     questions = QuestionSerializer(many=True)
 
     class Meta:
         model = Quiz
-        fields = ["id", "title", "description", "owner", "questions", "created_at", "updated_at"]
-        read_only_fields = ["id", "owner", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "title",
+            "description",
+            "document",
+            "document_title",
+            "owner",
+            "questions",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "owner", "created_at", "updated_at", "document_title"]
+
+    def validate_document(self, value):
+        request = self.context.get("request")
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("Authentication required.")
+        if value.owner != request.user:
+            raise serializers.ValidationError("Document does not belong to you.")
+        if (value.status or "").upper() != "READY":
+            raise serializers.ValidationError("Document must be READY to create a quiz.")
+        return value
 
     def create(self, validated_data):
         questions_data = validated_data.pop("questions", [])
@@ -45,12 +68,24 @@ class QuizSerializer(serializers.ModelSerializer):
 
 
 class QuizDetailSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(read_only=True)
+    document_title = serializers.CharField(source="document.title", read_only=True)
     questions = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Quiz
-        fields = ["id", "title", "description", "owner", "questions", "created_at", "updated_at"]
-        read_only_fields = ["id", "owner", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "title",
+            "description",
+            "document",
+            "document_title",
+            "owner",
+            "questions",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "owner", "created_at", "updated_at", "document_title"]
 
 
 class AttemptAnswerSerializer(serializers.ModelSerializer):
@@ -60,9 +95,10 @@ class AttemptAnswerSerializer(serializers.ModelSerializer):
 
 
 class QuizAttemptSerializer(serializers.ModelSerializer):
+    quiz_title = serializers.CharField(source="quiz.title", read_only=True)
     answers = AttemptAnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = QuizAttempt
-        fields = ["id", "quiz", "user", "score", "started_at", "finished_at", "answers"]
-        read_only_fields = ["id", "user", "score", "started_at", "finished_at", "answers"]
+        fields = ["id", "quiz", "quiz_title", "user", "score", "started_at", "finished_at", "answers"]
+        read_only_fields = ["id", "user", "score", "started_at", "finished_at", "answers", "quiz_title"]

@@ -3,35 +3,42 @@ from django.conf import settings
 
 
 class Quiz(models.Model):
-	title = models.CharField(max_length=255)
-	description = models.TextField(blank=True)
-	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="quizzes")
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=255)
+    document = models.ForeignKey(
+        "documents.Document",
+        on_delete=models.CASCADE,
+        related_name="quizzes",
+        null=True,
+        blank=True,
+    )
+    description = models.TextField(blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="quizzes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-	def __str__(self):
-		return self.title
+    def __str__(self):
+        return self.title
 
 
 class Question(models.Model):
-	quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
-	text = models.TextField()
-	order = models.PositiveIntegerField(default=0)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
+    text = models.TextField()
+    order = models.PositiveIntegerField(default=0)
 
-	class Meta:
-		ordering = ["order"]
+    class Meta:
+        ordering = ["order"]
 
-	def __str__(self):
-		return f"Q{self.order}: {self.text[:50]}"
+    def __str__(self):
+        return f"Q{self.order}: {self.text[:50]}"
 
 
 class Answer(models.Model):
-	question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
-	text = models.CharField(max_length=1000)
-	is_correct = models.BooleanField(default=False)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    text = models.CharField(max_length=1000)
+    is_correct = models.BooleanField(default=False)
 
-	def __str__(self):
-		return f"{self.text[:50]}{' (correct)' if self.is_correct else ''}"
+    def __str__(self):
+        return f"{self.text[:50]}{' (correct)' if self.is_correct else ''}"
 
 
 class QuizAttempt(models.Model):

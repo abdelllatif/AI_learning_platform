@@ -8,14 +8,14 @@ const LinkItem = ({to, children}) => (
 export default function Sidebar(){
   return (
     <div>
-      <LinkItem to="/dashboard">Home</LinkItem>
+      <div style={{ marginBottom: 22, color: 'var(--text-muted)', fontWeight: 700 }}>Navigation</div>
+      <LinkItem to="/dashboard">Dashboard</LinkItem>
       <LinkItem to="/documents">Library</LinkItem>
-      <LinkItem to="/chat">Chats</LinkItem>
-      <LinkItem to="/quiz">Quizzes</LinkItem>
-      <LinkItem to="/upload">Upload</LinkItem>
-      <hr/>
-      <LinkItem to="/settings">Settings</LinkItem>
+      <LinkItem to="/chat">Chat</LinkItem>
+      <LinkItem to="/quiz">Quiz</LinkItem>
+      <div style={{ margin: '24px 0 12px', color: 'var(--text-muted)', fontWeight: 700 }}>Account</div>
       <LinkItem to="/profile">Profile</LinkItem>
+      <LinkItem to="/settings">Settings</LinkItem>
     </div>
   )
 }

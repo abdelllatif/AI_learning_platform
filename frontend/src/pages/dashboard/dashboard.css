@@ -1,0 +1,65 @@
+/* Dashboard — from folio/dashboard.html */
+.greet-row{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; flex-wrap:wrap; gap:16px; }
+.greet-row h1{ font-size:28px; margin-bottom:6px; }
+.greet-row p{ color:var(--text-muted); font-size:14.5px; }
+
+.stat-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:44px; }
+.stat-card{ padding:22px; display:flex; align-items:center; gap:14px; }
+.stat-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stat-card b{ display:block; font-family:var(--font-display); font-size:22px; }
+.stat-card span{ font-size:12.5px; color:var(--text-muted); }
+
+.section-title-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+.section-title-row h2{ font-size:18px; }
+.section-title-row a{ font-size:13.5px; font-weight:600; color:var(--primary); display:flex; align-items:center; gap:4px; }
+section.dash-block{ margin-bottom:48px; }
+
+.continue-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.continue-card{ padding:20px; display:flex; flex-direction:column; gap:12px; transition:box-shadow var(--fast), transform var(--fast); }
+.continue-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.continue-top{ display:flex; gap:12px; align-items:center; }
+.doc-thumb{ width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.continue-top div b{ display:block; font-size:14px; }
+.continue-top div span{ font-size:12px; color:var(--text-faint); }
+.progress-track{ height:7px; background:var(--surface-sunken); border-radius:999px; overflow:hidden; }
+.progress-fill{ height:100%; background:linear-gradient(90deg, var(--primary), #7C74F0); border-radius:999px; }
+.continue-meta{ display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); }
+
+.doc-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.doc-card{ padding:20px; display:flex; flex-direction:column; gap:14px; transition:box-shadow var(--fast), transform var(--fast); }
+.doc-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.doc-card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+.doc-icon{ width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+.doc-card h3{ font-size:14.5px; margin-bottom:3px; }
+.doc-card .meta{ font-size:12px; color:var(--text-faint); }
+
+.upload-tile{
+  border:1.5px dashed var(--border-strong); border-radius:var(--r-lg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  padding:20px; text-align:center; color:var(--text-muted); transition:background var(--fast), border-color var(--fast);
+  min-height:172px;
+}
+.upload-tile:hover{ background:var(--primary-tint); border-color:var(--primary); color:var(--primary); }
+.upload-tile .doc-icon{ background:var(--primary-tint); color:var(--primary); }
+
+.chat-list{ display:flex; flex-direction:column; gap:10px; }
+.chat-row{ padding:16px 18px; display:flex; align-items:center; gap:14px; transition:box-shadow var(--fast); }
+.chat-row:hover{ box-shadow:var(--shadow-md); }
+.chat-row .doc-thumb{ width:40px; height:40px; }
+.chat-row .grow{ flex:1; min-width:0; }
+.chat-row .grow b{ font-size:14px; display:block; }
+.chat-row .grow p{ font-size:12.5px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-row .time{ font-size:12px; color:var(--text-faint); flex-shrink:0; }
+
+.quiz-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.quiz-card{ padding:20px; display:flex; align-items:center; gap:16px; }
+.score-ring{ width:56px; height:56px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:13px; }
+.quiz-card h3{ font-size:14px; margin-bottom:3px; }
+.quiz-card span{ font-size:12px; color:var(--text-faint); }
+
+@media (max-width:1080px){
+  .stat-strip{ grid-template-columns:repeat(2,1fr); }
+  .continue-row{ grid-template-columns:1fr 1fr; }
+  .doc-grid{ grid-template-columns:1fr 1fr; }
+  .quiz-grid{ grid-template-columns:1fr; }
+}

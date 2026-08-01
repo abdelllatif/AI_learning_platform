@@ -12,12 +12,14 @@ from .serializers import QuizSerializer, QuizDetailSerializer, QuizAttemptSerial
 
 class QuizListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Quiz.objects.all().order_by("-created_at")
     serializer_class = QuizSerializer
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ["title", "description"]
     ordering_fields = ["created_at", "updated_at", "title"]
     ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return Quiz.objects.filter(owner=self.request.user).order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -25,15 +27,17 @@ class QuizListCreateView(generics.ListCreateAPIView):
 
 class QuizDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Quiz.objects.all()
     serializer_class = QuizDetailSerializer
+
+    def get_queryset(self):
+        return Quiz.objects.filter(owner=self.request.user)
 
 
 class QuizSubmitView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        quiz = get_object_or_404(Quiz, pk=pk)
+        quiz = get_object_or_404(Quiz, pk=pk, owner=request.user)
         data = request.data.get("answers", {})
         # data expected: {"question_id": selected_answer_id, ...}
         attempt = QuizAttempt.objects.create(quiz=quiz, user=request.user)
