@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 
 
 class Document(models.Model):
+    STATUS_UPLOADED = "UPLOADED"
+    STATUS_PROCESSING = "PROCESSING"
+    STATUS_READY = "READY"
+    STATUS_FAILED = "FAILED"
+
+    STATUS_CHOICES = [
+        (STATUS_UPLOADED, "Uploaded"),
+        (STATUS_PROCESSING, "Processing"),
+        (STATUS_READY, "Ready"),
+        (STATUS_FAILED, "Failed"),
+    ]
 
     title = models.CharField(max_length=255)
 
@@ -15,7 +26,8 @@ class Document(models.Model):
 
     status = models.CharField(
         max_length=20,
-        default="UPLOADED"
+        choices=STATUS_CHOICES,
+        default=STATUS_UPLOADED,
     )
 
     uploaded_at = models.DateTimeField(

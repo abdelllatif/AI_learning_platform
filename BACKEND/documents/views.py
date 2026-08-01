@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from .models import Document
 from .serializers import DocumentSerializer
+from ai.pipeline import start_document_processing
 
 
 class DocumentUploadView(APIView):
@@ -17,8 +18,11 @@ class DocumentUploadView(APIView):
     def post(self, request):
         serializer = DocumentSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            document = serializer.save(owner=request.user)
+            document.status = Document.STATUS_PROCESSING
+            document.save(update_fields=["status"])
+            start_document_processing(document)
+            return Response(DocumentSerializer(document).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -11,6 +11,7 @@ from .serializers import (
     MessageSerializer,
     MessageCreateSerializer,
 )
+from ai.agent import answer_user_message
 
 
 class ChatListCreateView(generics.ListCreateAPIView):
@@ -65,10 +66,8 @@ class UserMessageCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         chat = get_object_or_404(Chat, pk=self.kwargs["chat_id"], owner=self.request.user)
-        # create user message
-        user_msg = Message.objects.create(chat=chat, sender=Message.SENDER_USER, content=serializer.validated_data["content"])
-        # create static AI response
-        ai_content = "hello im ure agent i will help u today any way its just a response static so u know and i guess what wan we do"
+        Message.objects.create(chat=chat, sender=Message.SENDER_USER, content=serializer.validated_data["content"])
+        ai_content = answer_user_message(chat, serializer.validated_data["content"])
         Message.objects.create(chat=chat, sender=Message.SENDER_AI, content=ai_content)
 
     def create(self, request, *args, **kwargs):
