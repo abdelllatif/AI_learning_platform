@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from .models import Document
 from .serializers import DocumentSerializer
-from ai.pipeline import start_document_processing
+from ai_engine.orchestrator.ai_pipeline import start_document_processing
 
 
 class DocumentUploadView(APIView):

@@ -11,7 +11,7 @@ from .serializers import (
     MessageSerializer,
     MessageCreateSerializer,
 )
-from ai.agent import answer_user_message
+from ai_engine.agents.chat_agent import answer_user_question
 
 
 class ChatListCreateView(generics.ListCreateAPIView):
@@ -67,7 +67,7 @@ class UserMessageCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         chat = get_object_or_404(Chat, pk=self.kwargs["chat_id"], owner=self.request.user)
         Message.objects.create(chat=chat, sender=Message.SENDER_USER, content=serializer.validated_data["content"])
-        ai_content = answer_user_message(chat, serializer.validated_data["content"])
+        ai_content = answer_user_question(chat, serializer.validated_data["content"])
         Message.objects.create(chat=chat, sender=Message.SENDER_AI, content=ai_content)
 
     def create(self, request, *args, **kwargs):
