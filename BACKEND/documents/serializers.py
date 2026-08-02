@@ -17,6 +17,9 @@ class DocumentSerializer(serializers.ModelSerializer):
             "language",
             "pages",
             "checksum",
+            "summary",
+            "keywords",
+            "reading_time",
             "status",
             "uploaded_at",
             "owner",
@@ -26,6 +29,9 @@ class DocumentSerializer(serializers.ModelSerializer):
             "uploaded_at",
             "pages",
             "checksum",
+            "summary",
+            "keywords",
+            "reading_time",
             "status",
         )
 

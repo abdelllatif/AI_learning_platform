@@ -1,1 +1,1 @@
-"""Prompt templates for AI agents.""
+"""Prompt templates for AI agents."""

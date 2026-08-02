@@ -41,6 +41,21 @@ class Document(models.Model):
         null=True,
     )
 
+    summary = models.TextField(
+        blank=True,
+        null=True,
+    )
+
+    keywords = models.JSONField(
+        blank=True,
+        null=True,
+    )
+
+    reading_time = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,

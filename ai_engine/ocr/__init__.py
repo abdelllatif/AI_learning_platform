@@ -1,1 +1,1 @@
-"""OCR helpers for the AI engine.""
+"""OCR helpers for the AI engine."""

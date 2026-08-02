@@ -1,2 +1,10 @@
 def detect_language(text: str) -> str:
-    return "en"
+    if not text:
+        return "en"
+
+    try:
+        from langdetect import detect
+
+        return detect(text)
+    except Exception:
+        return "en"

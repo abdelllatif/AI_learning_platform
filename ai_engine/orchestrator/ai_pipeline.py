@@ -32,9 +32,12 @@ def _process_document(document_id: int):
 
         if title:
             document.title = title
+        document.summary = summary
+        document.keywords = metadata.get("keywords") or []
+        document.reading_time = metadata.get("reading_time")
         if metadata.get("language"):
             document.language = metadata["language"]
-        document.save(update_fields=["title", "language"])
+        document.save(update_fields=["title", "language", "summary", "keywords", "reading_time"])
 
         document.status = Document.STATUS_READY
         document.save(update_fields=["status"])
