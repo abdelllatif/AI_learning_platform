@@ -1,7 +1,7 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from ai_engine.embeddings.embedding_model import embed_text
-from documents.models import DocumentChunk
+from documents.models import Document, DocumentChunk
 
 
 def _cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
@@ -16,12 +16,15 @@ def _cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     return dot / (norm1 * norm2)
 
 
-def retrieve(query: str, top_k: int = 5) -> List[DocumentChunk]:
+def retrieve(query: str, document: Optional[Document] = None, top_k: int = 5) -> List[DocumentChunk]:
     query_vector = embed_text(query)
     if not query_vector:
         return []
 
-    chunks = DocumentChunk.objects.exclude(embedding__isnull=True).all()
+    chunks = DocumentChunk.objects.exclude(embedding__isnull=True)
+    if document is not None:
+        chunks = chunks.filter(document=document)
+
     scored: List[Tuple[float, DocumentChunk]] = []
 
     for chunk in chunks:

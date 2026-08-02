@@ -19,7 +19,6 @@ def _load_llm():
             "text-generation",
             model=settings.LLM_MODEL,
             device=device,
-            max_length=settings.LLM_MAX_TOKENS,
             pad_token_id=50256,
         )
     except Exception:
