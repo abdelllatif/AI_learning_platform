@@ -74,3 +74,22 @@ class Document(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class DocumentChunk(models.Model):
+    document = models.ForeignKey(
+        Document,
+        on_delete=models.CASCADE,
+        related_name="chunks"
+    )
+    chunk_index = models.IntegerField()
+    text = models.TextField()
+    metadata = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("document", "chunk_index")
+        ordering = ["chunk_index"]
+
+    def __str__(self):
+        return f"DocumentChunk(document_id={self.document_id}, index={self.chunk_index})"
