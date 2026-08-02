@@ -1,0 +1,11 @@
+Django>=5.2
+psycopg2-binary
+djangorestframework
+djangorestframework-simplejwt
+sentence-transformers
+transformers
+torch
+pdfplumber
+PyMuPDF
+pillow
+python-dotenv
