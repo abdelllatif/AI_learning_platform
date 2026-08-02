@@ -16,6 +16,9 @@ def answer_user_question(chat: Chat, question: str) -> str:
     if not chat.document:
         return "This chat is not attached to a document. Please create a chat linked to a READY document."
 
+    if (chat.document.status or "").upper() != chat.document.STATUS_READY:
+        return "The linked document is not ready yet. Please wait until processing completes."
+
     chunks = retrieve(question, document=chat.document, top_k=3)
     if not chunks:
         return "No indexed document content is available yet. Please wait until the document processing completes."

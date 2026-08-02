@@ -21,6 +21,9 @@ def retrieve(query: str, document: Optional[Document] = None, top_k: int = 5) ->
     if not query_vector:
         return []
 
+    if document is not None and (document.status or "").upper() != Document.STATUS_READY:
+        return []
+
     chunks = DocumentChunk.objects.exclude(embedding__isnull=True)
     if document is not None:
         chunks = chunks.filter(document=document)
