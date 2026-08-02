@@ -4,6 +4,7 @@ from threading import Thread
 from documents.models import Document
 from ai_engine.agents.ingestion_agent import ingest_document
 from ai_engine.agents.chunk_agent import chunk_document
+from ai_engine.agents.embedding_agent import embed_document_chunks
 from ai_engine.agents.title_agent import generate_title
 from ai_engine.agents.metadata_agent import extract_metadata
 from ai_engine.agents.summary_agent import generate_summary
@@ -27,6 +28,7 @@ def _process_document(document_id: int):
     try:
         ingest_document(document)
         chunk_document(document)
+        embed_document_chunks(document)
         title = generate_title(document)
         metadata = extract_metadata(document)
         summary = generate_summary(document)

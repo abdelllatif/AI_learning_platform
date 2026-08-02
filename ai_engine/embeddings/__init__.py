@@ -1,1 +1,1 @@
-"""Embedding model utilities.""
+"""Embedding model utilities."""
