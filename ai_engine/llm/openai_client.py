@@ -1,6 +1,30 @@
+import json
+import urllib.request
+import urllib.error
+
 from ai_engine.config import settings
 from ai_engine.llm.llm_factory import get_llm_client
 from ai_engine.llm.response_parser import parse_response
+
+
+def _completion_ollama(prompt: str) -> str:
+    url = f"{settings.OLLAMA_URL.rstrip('/')}/api/generate"
+    payload = json.dumps({
+        "model": settings.OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "num_predict": settings.LLM_MAX_TOKENS,
+        }
+    }).encode("utf-8")
+
+    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("response", "").strip()
+    except Exception:
+        return ""
 
 
 def _truncate_prompt(prompt: str, client) -> str:
@@ -26,9 +50,14 @@ def _truncate_prompt(prompt: str, client) -> str:
 
 
 def completion(prompt: str) -> str:
+    if settings.LLM_PROVIDER.lower() == "ollama":
+        res = _completion_ollama(prompt)
+        if res:
+            return res
+
     client = get_llm_client()
     if client is None:
-        return "Local LLM is not available. Install transformers and a compatible model."
+        return ""
 
     prompt = _truncate_prompt(prompt, client)
     outputs = client(
@@ -44,3 +73,4 @@ def completion(prompt: str) -> str:
 
     text = outputs[0].get("generated_text") if isinstance(outputs, list) else outputs.get("generated_text", "")
     return parse_response(text)
+
