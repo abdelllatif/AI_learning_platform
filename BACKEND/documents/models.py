@@ -15,7 +15,7 @@ class Document(models.Model):
         (STATUS_FAILED, "Failed"),
     ]
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, blank=True)
 
     file = models.FileField(upload_to="documents/")
 

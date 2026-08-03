@@ -34,6 +34,9 @@ class DocumentSerializer(serializers.ModelSerializer):
             "reading_time",
             "status",
         )
+        extra_kwargs = {
+            "title": {"required": False, "allow_blank": True}
+        }
 
     def validate_file(self, value):
         if value.size == 0:
