@@ -10,8 +10,9 @@ import {
   Trash2,
   Sparkles,
   Info,
+  Loader2,
 } from 'lucide-react'
-import { documentsApi, chatApi, mediaUrl } from '../../api'
+import { documentsApi, chatApi, quizApi, mediaUrl } from '../../api'
 import './document.css'
 
 function formatDate(iso) {
@@ -34,6 +35,7 @@ export default function Document() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [generatingQuiz, setGeneratingQuiz] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -102,6 +104,24 @@ export default function Document() {
       navigate('/documents')
     } catch (err) {
       window.alert(err.message || 'Delete failed')
+    }
+  }
+
+  const generateQuiz = async () => {
+    if (!doc) return
+    if (!isReady) {
+      window.alert('This document must be READY before you can generate a quiz.')
+      return
+    }
+
+    setGeneratingQuiz(true)
+    try {
+      const quiz = await quizApi.generate(doc.id, 5)
+      navigate(`/quiz/${quiz.id}`)
+    } catch (err) {
+      window.alert(err.message || 'Failed to generate quiz')
+    } finally {
+      setGeneratingQuiz(false)
     }
   }
 
@@ -200,9 +220,22 @@ export default function Document() {
               <MessageSquareText size={16} />
               {busy ? 'Opening…' : isReady ? 'Open Chat' : 'Processing…'}
             </button>
-            <Link to="/quiz" className="btn btn-soft">
-              <ListChecks size={16} /> Quizzes
-            </Link>
+            <button
+              type="button"
+              className="btn btn-soft"
+              onClick={generateQuiz}
+              disabled={generatingQuiz || !isReady}
+            >
+              {generatingQuiz ? (
+                <>
+                  <Loader2 size={16} className="spin" /> Generating…
+                </>
+              ) : (
+                <>
+                  <ListChecks size={16} /> Generate Quiz
+                </>
+              )}
+            </button>
             {doc.file && (
               <a
                 className="btn-icon"
@@ -290,6 +323,7 @@ export default function Document() {
       </div>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
+        .spin { animation: spin 1s linear infinite }
       `}</style>
     </>
   )

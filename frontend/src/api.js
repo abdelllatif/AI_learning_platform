@@ -228,6 +228,12 @@ export const quizApi = {
     apiFetch(`/api/quiz/${id}/submit/`, { method: 'POST', body: { answers } }),
 
   history: (params = {}) => apiFetch(`/api/quiz/history/${qs(params)}`),
+
+  generate: (documentId, numQuestions = 5) =>
+    apiFetch('/api/quiz/generate/', {
+      method: 'POST',
+      body: { document_id: documentId, num_questions: numQuestions },
+    }),
 }
 
 export default { apiFetch, authApi, documentsApi, chatApi, quizApi }
