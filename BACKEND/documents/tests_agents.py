@@ -118,3 +118,39 @@ class MetadataAgentTestCase(TestCase):
         self.assertIsNotNone(metadata["reading_time"])
 
 
+class TitleAndSummaryAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="ts_user", password="Password123!")
+
+    def test_generate_title_existing(self):
+        from ai_engine.agents.title_agent import generate_title
+
+        doc = Document.objects.create(owner=self.user, title="Existing Custom Title", text_content="Some content")
+        title = generate_title(doc)
+        self.assertEqual(title, "Existing Custom Title")
+
+    def test_generate_title_fallback(self):
+        from ai_engine.agents.title_agent import generate_title
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Untitled Document",
+            text_content="Deep Learning and Neural Networks guide for beginners."
+        )
+        title = generate_title(doc)
+        self.assertTrue(bool(title and title.strip()))
+
+    def test_generate_summary_fallback(self):
+        from ai_engine.agents.summary_agent import generate_summary
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Test Doc",
+            text_content="Line one of document.\nLine two of document.\nLine three of document."
+        )
+        summary = generate_summary(doc)
+        self.assertTrue(bool(summary and summary.strip()))
+
+
+
