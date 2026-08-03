@@ -136,6 +136,8 @@ export default function Documents() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [ordering, setOrdering] = useState('-uploaded_at')
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(12)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -150,6 +152,8 @@ export default function Documents() {
       const data = await documentsApi.list({
         search: search.trim() || undefined,
         ordering,
+        page,
+        page_size: pageSize,
       })
       const results = Array.isArray(data) ? data : data?.results || []
       setDocs(results)
@@ -159,7 +163,7 @@ export default function Documents() {
     } finally {
       setLoading(false)
     }
-  }, [search, ordering])
+  }, [search, ordering, page, pageSize])
 
   useEffect(() => {
     const t = setTimeout(load, 250)
@@ -272,6 +276,9 @@ export default function Documents() {
         <>
           <div className="shelf-label">
             <h2>All documents</h2>
+            <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>
+              {count} total document{count === 1 ? '' : 's'}
+            </span>
           </div>
           <div className="book-grid">
             {filtered.map((doc, i) => (
@@ -288,6 +295,30 @@ export default function Documents() {
               <b style={{ fontSize: '13.5px' }}>Add a document</b>
             </Link>
           </div>
+          
+          {count > pageSize && (
+            <div className="pagination">
+              <button
+                type="button"
+                className="btn btn-soft btn-sm"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+              >
+                Previous
+              </button>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                Page {page} of {Math.ceil(count / pageSize)}
+              </span>
+              <button
+                type="button"
+                className="btn btn-soft btn-sm"
+                onClick={() => setPage(p => p + 1)}
+                disabled={page >= Math.ceil(count / pageSize)}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
     </>
