@@ -56,5 +56,5 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if not validated_data.get("title"):
-            validated_data["title"] = "Untitled document"
+            validated_data["title"] = ""
         return super().create(validated_data)
