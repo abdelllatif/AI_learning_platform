@@ -51,30 +51,106 @@ export default function Upload() {
       }
 
       const id = `${Date.now()}-${Math.random()}`
+      const uploadId = id
       setError('')
-      setUploadItems(prev => [{ id, name: file.name, pct: 15, done: false, failed: false }, ...prev])
+      setUploadItems(prev => [{ 
+        id, 
+        name: file.name, 
+        pct: 15, 
+        done: false, 
+        failed: false, 
+        status: 'UPLOADING',
+        documentId: null 
+      }, ...prev])
 
       const tick = setInterval(() => {
         setUploadItems(prev =>
           prev.map(item =>
-            item.id === id && !item.done && !item.failed && item.pct < 90
-              ? { ...item, pct: Math.min(90, item.pct + 12) }
+            item.id === id && !item.done && !item.failed && item.pct < 40
+              ? { ...item, pct: Math.min(40, item.pct + 8) }
               : item
           )
         )
-      }, 280)
+      }, 200)
 
       try {
-        await documentsApi.upload(file)
+        const uploadedDoc = await documentsApi.upload(file)
         clearInterval(tick)
+        
         setUploadItems(prev =>
-          prev.map(item => (item.id === id ? { ...item, pct: 100, done: true } : item))
+          prev.map(item => (item.id === id ? { 
+            ...item, 
+            pct: 50, 
+            status: 'PROCESSING',
+            documentId: uploadedDoc.id 
+          } : item))
         )
-        await loadRecent()
+
+        // Poll for document status until READY
+        const pollInterval = setInterval(async () => {
+          try {
+            const freshDoc = await documentsApi.get(uploadedDoc.id)
+            const status = (freshDoc.status || '').toUpperCase()
+            
+            setUploadItems(prev =>
+              prev.map(item => {
+                if (item.id !== id) return item
+                
+                let newPct = item.pct
+                let newStatus = item.status
+                
+                if (status === 'PROCESSING' || status === 'UPLOADED') {
+                  newPct = Math.min(95, item.pct + 5)
+                  newStatus = 'PROCESSING'
+                } else if (status === 'READY' || status === 'PROCESSED') {
+                  newPct = 100
+                  newStatus = 'READY'
+                }
+                
+                return { ...item, pct: newPct, status: newStatus }
+              })
+            )
+
+            if (status === 'READY' || status === 'PROCESSED') {
+              clearInterval(pollInterval)
+              setUploadItems(prev =>
+                prev.map(item => (item.id === id ? { ...item, pct: 100, done: true, status: 'READY' } : item))
+              )
+              await loadRecent()
+              
+              // Auto-remove after 5 seconds
+              setTimeout(() => {
+                setUploadItems(prev => prev.filter(item => item.id !== id))
+              }, 5000)
+            } else if (status === 'FAILED') {
+              clearInterval(pollInterval)
+              setUploadItems(prev =>
+                prev.map(item => (item.id === id ? { ...item, pct: 100, failed: true, status: 'FAILED' } : item))
+              )
+            }
+          } catch (err) {
+            clearInterval(pollInterval)
+            setUploadItems(prev =>
+              prev.map(item => (item.id === id ? { ...item, pct: 100, failed: true, status: 'FAILED' } : item))
+            )
+          }
+        }, 3000)
+
+        // Set timeout to prevent infinite polling
+        setTimeout(() => {
+          clearInterval(pollInterval)
+          setUploadItems(prev =>
+            prev.map(item => {
+              if (item.id !== id || item.done) return item
+              return { ...item, pct: 100, failed: true, status: 'TIMEOUT' }
+            })
+          )
+        }, 300000) // 5 minutes max
+
       } catch (err) {
         clearInterval(tick)
         setUploadItems(prev =>
-          prev.map(item => (item.id === id ? { ...item, pct: 100, failed: true } : item))
+          prev.map(item => (item.id === id ? { ...item, pct: 100, failed: true, status: 'ERROR' } : item))
         )
         setError(err.message || 'Upload failed')
       }
@@ -180,7 +256,7 @@ export default function Upload() {
                 </div>
                 <div className="pct">
                   <span>
-                    {item.failed ? 'Failed' : item.done ? 'Done' : 'Uploading…'}
+                    {item.failed ? (item.status === 'TIMEOUT' ? 'Timeout' : 'Failed') : item.done ? 'READY' : item.status || 'Uploading…'}
                   </span>
                   <span>{Math.floor(item.pct)}%</span>
                 </div>
