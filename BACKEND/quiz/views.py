@@ -9,7 +9,7 @@ from django.utils import timezone
 from documents.models import Document
 from .models import Quiz, Question, Answer, QuizAttempt, AttemptAnswer
 from .serializers import QuizSerializer, QuizDetailSerializer, QuizAttemptSerializer
-from ai_engine.agents.quiz_agent import generate_quiz
+from ai_engine.agents.quiz_agent import generate_quiz, save_quiz
 
 
 class QuizListCreateView(generics.ListCreateAPIView):
@@ -82,6 +82,48 @@ class QuizHistoryView(generics.ListAPIView):
 
     def get_queryset(self):
         return QuizAttempt.objects.filter(user=self.request.user).order_by("-started_at")
-from django.shortcuts import render
 
-# Create your views here.
+
+class QuizGenerateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        document_id = request.data.get("document_id")
+        num_questions = request.data.get("num_questions", 5)
+        
+        if not document_id:
+            return Response(
+                {"error": "document_id is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        document = get_object_or_404(Document, pk=document_id, owner=request.user)
+        
+        # Check if document is ready
+        if document.status not in ['READY', 'PROCESSED']:
+            return Response(
+                {"error": "Document must be READY to generate quiz"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Generate quiz data
+            quiz_data = generate_quiz(document, num_questions=num_questions)
+            
+            # Save quiz to database
+            quiz = save_quiz(document, quiz_data)
+            
+            if not quiz:
+                return Response(
+                    {"error": "Failed to generate quiz"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            
+            serializer = QuizDetailSerializer(quiz)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

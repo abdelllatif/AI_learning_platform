@@ -6,4 +6,5 @@ urlpatterns = [
     path("<int:pk>/", views.QuizDetailView.as_view(), name="quiz-detail"),
     path("<int:pk>/submit/", views.QuizSubmitView.as_view(), name="quiz-submit"),
     path("history/", views.QuizHistoryView.as_view(), name="quiz-history"),
+    path("generate/", views.QuizGenerateView.as_view(), name="quiz-generate"),
 ]
