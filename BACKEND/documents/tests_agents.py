@@ -242,6 +242,59 @@ class ChatAgentTestCase(TestCase):
         self.assertTrue(bool(ans and ans.strip()))
 
 
+class QuizAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="quiz_ag_user", password="Password123!")
+
+    def test_quiz_validation(self):
+        from ai_engine.agents.quiz_agent import _validate_quiz_structure
+
+        invalid_quiz = {"title": "Bad Quiz", "questions": "not a list"}
+        self.assertFalse(_validate_quiz_structure(invalid_quiz))
+
+        valid_quiz = {
+            "title": "Good Quiz",
+            "questions": [
+                {
+                    "text": "What is Python?",
+                    "answers": [
+                        {"text": "Language", "is_correct": True},
+                        {"text": "Snake", "is_correct": False}
+                    ]
+                }
+            ]
+        }
+        self.assertTrue(_validate_quiz_structure(valid_quiz))
+
+    def test_quiz_fallback_generation_and_saving(self):
+        from ai_engine.agents.quiz_agent import generate_quiz, save_quiz
+        from quiz.models import Quiz, Question, Answer
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Python Basics",
+            status=Document.STATUS_READY,
+            text_content="Python is an interpreted programming language used widely in data science and AI."
+        )
+
+        quiz_data = generate_quiz(doc, num_questions=3)
+        self.assertIn("questions", quiz_data)
+        self.assertGreater(len(quiz_data["questions"]), 0)
+
+        saved_quiz = save_quiz(doc, quiz_data)
+        self.assertIsNotNone(saved_quiz)
+        self.assertEqual(saved_quiz.document, doc)
+
+        questions = Question.objects.filter(quiz=saved_quiz)
+        self.assertGreater(questions.count(), 0)
+
+        answers = Answer.objects.filter(question=questions.first())
+        self.assertGreater(answers.count(), 0)
+        self.assertTrue(answers.filter(is_correct=True).exists())
+
+
+
 
 
 
