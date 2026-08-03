@@ -37,7 +37,7 @@ def _process_document(document_id: int):
             quiz_data = generate_quiz(document)
 
             if title:
-                document.title = title
+                document.title = title[:255]
             document.summary = summary
             document.keywords = metadata.get("keywords") or []
             document.reading_time = metadata.get("reading_time")
