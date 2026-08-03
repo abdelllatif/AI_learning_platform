@@ -212,6 +212,37 @@ class RetrieverAgentTestCase(TestCase):
         self.assertEqual(results[0].pk, chunk1.pk)
 
 
+class ChatAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="chat_user", password="Password123!")
+
+    def test_chat_agent_flow(self):
+        from ai_engine.agents.chat_agent import create_default_chat, answer_user_question
+        from ai_engine.embeddings.embedding_service import create_embeddings
+        from documents.models import DocumentChunk
+        from chat.models import Chat
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="AI Intro",
+            status=Document.STATUS_READY,
+            text_content="Artificial Intelligence overview."
+        )
+
+        chat = create_default_chat(doc, summary="AI Summary")
+        self.assertIsInstance(chat, Chat)
+        self.assertEqual(chat.document, doc)
+
+        text = "Artificial intelligence uses neural networks for pattern recognition."
+        emb = create_embeddings([text])[0]
+        DocumentChunk.objects.create(document=doc, chunk_index=0, text=text, embedding=emb)
+
+        ans = answer_user_question(chat, "What is AI?")
+        self.assertTrue(bool(ans and ans.strip()))
+
+
+
 
 
 
