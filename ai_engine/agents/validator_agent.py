@@ -55,7 +55,7 @@ def _get_pdf_metadata(data: bytes) -> dict:
     return metadata
 
 
-def validate_pdf(file: UploadedFile, owner=None) -> dict:
+def validate_pdf(file: UploadedFile, owner=None, exclude_document_id=None) -> dict:
     errors = []
     data = _read_file_bytes(file)
     size = len(data)
@@ -70,7 +70,10 @@ def validate_pdf(file: UploadedFile, owner=None) -> dict:
         errors.append("File is not a valid PDF.")
 
     checksum = _checksum(data)
-    if owner and Document.objects.filter(checksum=checksum, owner=owner).exists():
+    query = Document.objects.filter(checksum=checksum, owner=owner)
+    if exclude_document_id is not None:
+        query = query.exclude(pk=exclude_document_id)
+    if owner and query.exists():
         errors.append("This document appears to be a duplicate.")
 
     metadata = _get_pdf_metadata(data)
@@ -89,3 +92,4 @@ def validate_pdf(file: UploadedFile, owner=None) -> dict:
         "is_encrypted": metadata.get("is_encrypted"),
         "is_corrupt": metadata.get("is_corrupt"),
     }
+
