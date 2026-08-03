@@ -182,5 +182,36 @@ class ChunkAndEmbeddingAgentTestCase(TestCase):
         self.assertGreater(len(first_chunk.embedding), 0)
 
 
+class RetrieverAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="ret_user", password="Password123!")
+
+    def test_retriever_ranking(self):
+        from ai_engine.retriever.retriever import retrieve
+        from ai_engine.embeddings.embedding_service import create_embeddings
+        from documents.models import DocumentChunk
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Quantum vs Cooking",
+            status=Document.STATUS_READY,
+            text_content="Quantum mechanics physics. Delicious pasta recipe cooking."
+        )
+
+        c1_text = "Quantum computing uses qubits and superposition principle in physics."
+        c2_text = "Bake pasta with tomato sauce, mozzarella cheese, and garlic at 200 degrees."
+
+        embs = create_embeddings([c1_text, c2_text])
+
+        chunk1 = DocumentChunk.objects.create(document=doc, chunk_index=0, text=c1_text, embedding=embs[0])
+        chunk2 = DocumentChunk.objects.create(document=doc, chunk_index=1, text=c2_text, embedding=embs[1])
+
+        results = retrieve("qubits and physics", document=doc, top_k=2)
+        self.assertGreaterEqual(len(results), 1)
+        self.assertEqual(results[0].pk, chunk1.pk)
+
+
+
 
 
