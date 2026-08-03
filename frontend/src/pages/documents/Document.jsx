@@ -53,9 +53,32 @@ export default function Document() {
     load()
   }, [load])
 
+  // Live polling: refresh every 4s while status is still PROCESSING / UPLOADED
+  useEffect(() => {
+    const TERMINAL = ['READY', 'PROCESSED', 'FAILED']
+    if (!doc || TERMINAL.includes((doc.status || '').toUpperCase())) return
+
+    const interval = setInterval(async () => {
+      try {
+        const fresh = await documentsApi.get(id)
+        setDoc(fresh)
+        document.title = `${fresh.title} — Folio`
+        if (TERMINAL.includes((fresh.status || '').toUpperCase())) {
+          clearInterval(interval)
+        }
+      } catch {
+        clearInterval(interval)
+      }
+    }, 4000)
+
+    return () => clearInterval(interval)
+  }, [doc, id])
+
+  const isReady = doc && ['READY', 'PROCESSED'].includes((doc.status || '').toUpperCase())
+  const isProcessing = doc && ['PROCESSING', 'UPLOADED'].includes((doc.status || '').toUpperCase())
+
   const openChat = async () => {
     if (!doc) return
-    const isReady = ['READY', 'PROCESSED'].includes((doc.status || '').toUpperCase())
     if (!isReady) {
       window.alert('This document must be READY before you can start a chat.')
       return
@@ -105,6 +128,42 @@ export default function Document() {
         <span style={{ color: 'var(--text)' }}>{doc.title}</span>
       </div>
 
+      {/* Live processing banner */}
+      {isProcessing && (
+        <div
+          className="card"
+          style={{
+            marginBottom: 16,
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            background: 'linear-gradient(90deg,#1e293b,#1e3a5f)',
+            border: '1px solid #334155',
+          }}
+        >
+          <span style={{ fontSize: 20 }}>⚙️</span>
+          <div>
+            <strong style={{ color: '#93c5fd' }}>Processing your document…</strong>
+            <p style={{ margin: 0, fontSize: 12, color: '#94a3b8' }}>
+              AI is extracting text, generating summary, creating embeddings, and building your quiz. This page updates automatically.
+            </p>
+          </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              border: '2px solid #3b82f6',
+              borderTopColor: 'transparent',
+              animation: 'spin 0.8s linear infinite',
+              flexShrink: 0,
+            }}
+          />
+        </div>
+      )}
+
       <div className="card doc-hero">
         <div className="doc-hero-icon">
           <FileText size={32} />
@@ -120,7 +179,13 @@ export default function Document() {
               <Calendar size={16} />
               Uploaded {formatDate(doc.uploaded_at)}
             </span>
-            <span className="badge badge-success">
+            {doc.pages && (
+              <span className="doc-meta-item">📄 {doc.pages} pages</span>
+            )}
+            {doc.reading_time && (
+              <span className="doc-meta-item">⏱ {doc.reading_time} min read</span>
+            )}
+            <span className={`badge ${isReady ? 'badge-success' : 'badge-warning'}`}>
               <span className="badge-dot" />
               {doc.status || 'UPLOADED'}
             </span>
@@ -130,10 +195,10 @@ export default function Document() {
               type="button"
               className="btn btn-primary"
               onClick={openChat}
-              disabled={busy || !['READY', 'PROCESSED'].includes((doc.status || '').toUpperCase())}
+              disabled={busy || !isReady}
             >
               <MessageSquareText size={16} />
-              {busy ? 'Opening…' : ['READY', 'PROCESSED'].includes((doc.status || '').toUpperCase()) ? 'Open Chat' : 'Waiting for processing'}
+              {busy ? 'Opening…' : isReady ? 'Open Chat' : 'Processing…'}
             </button>
             <Link to="/quiz" className="btn btn-soft">
               <ListChecks size={16} /> Quizzes
@@ -162,11 +227,34 @@ export default function Document() {
             <h2>
               <Sparkles size={17} style={{ color: 'var(--primary)' }} /> About this document
             </h2>
-            <p>
-              This PDF is saved in your library. Open chat to ask questions about it, or start a
-              quiz from your quiz list. AI summaries and chapter extraction will appear here once
-              processing is wired up on the backend.
-            </p>
+            {doc.summary ? (
+              <p style={{ lineHeight: 1.7, color: 'var(--text-muted)' }}>{doc.summary}</p>
+            ) : (
+              <p style={{ color: 'var(--text-faint)', fontStyle: 'italic' }}>
+                {isProcessing ? 'Summary is being generated…' : 'No summary available.'}
+              </p>
+            )}
+            {doc.keywords && doc.keywords.length > 0 && (
+              <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {doc.keywords.map((kw, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: 20,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: 'var(--primary-tint)',
+                      color: 'var(--primary)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -177,16 +265,20 @@ export default function Document() {
             </h2>
             <div className="toc-list">
               <div className="toc-item">
-                <span className="name">Owner</span>
-                <span style={{ color: 'var(--text-muted)' }}>{doc.owner || '—'}</span>
+                <span className="name">Status</span>
+                <span style={{ color: isReady ? '#10b981' : 'var(--text-muted)' }}>{doc.status || '—'}</span>
               </div>
               <div className="toc-item">
                 <span className="name">Language</span>
                 <span style={{ color: 'var(--text-muted)' }}>{doc.language || '—'}</span>
               </div>
               <div className="toc-item">
-                <span className="name">Status</span>
-                <span style={{ color: 'var(--text-muted)' }}>{doc.status || '—'}</span>
+                <span className="name">Pages</span>
+                <span style={{ color: 'var(--text-muted)' }}>{doc.pages ?? '—'}</span>
+              </div>
+              <div className="toc-item">
+                <span className="name">Reading time</span>
+                <span style={{ color: 'var(--text-muted)' }}>{doc.reading_time ? `${doc.reading_time} min` : '—'}</span>
               </div>
               <div className="toc-item">
                 <span className="name">Uploaded</span>
@@ -196,6 +288,9 @@ export default function Document() {
           </div>
         </div>
       </div>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg) } }
+      `}</style>
     </>
   )
 }
