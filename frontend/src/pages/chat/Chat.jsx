@@ -9,7 +9,9 @@ import {
   ArrowUp,
   Plus,
   Trash2,
+  BookOpen,
 } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { chatApi, documentsApi } from '../../api'
 import { useAuth } from '../../context/AuthContext'
 import './chat.css'
@@ -380,10 +382,119 @@ export default function Chat() {
                 <div className={`msg-avatar ${role === 'ai' ? 'ai' : 'me'}`}>
                   {role === 'ai' ? <Sparkles size={15} /> : initial}
                 </div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div className="bubble">
-                    {msg.typing ? <TypingIndicator /> : msg.content}
+                    {msg.typing ? (
+                      <TypingIndicator />
+                    ) : role === 'ai' ? (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => <p style={{ marginBottom: '0.5em' }}>{children}</p>,
+                          code: ({ node, inline, className, children, ...props }) => {
+                            const match = /language-(\w+)/.exec(className || '')
+                            return !inline ? (
+                              <code
+                                className={className}
+                                style={{
+                                  display: 'block',
+                                  background: 'var(--bg-secondary)',
+                                  padding: '12px',
+                                  borderRadius: '6px',
+                                  overflowX: 'auto',
+                                  fontSize: '13px',
+                                  fontFamily: 'monospace',
+                                  marginBottom: '0.5em',
+                                }}
+                                {...props}
+                              >
+                                {children}
+                              </code>
+                            ) : (
+                              <code
+                                style={{
+                                  background: 'var(--bg-secondary)',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  fontSize: '13px',
+                                  fontFamily: 'monospace',
+                                }}
+                                {...props}
+                              >
+                                {children}
+                              </code>
+                            )
+                          },
+                          strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
+                          em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+                          ul: ({ children }) => <ul style={{ paddingLeft: '1.5em', marginBottom: '0.5em' }}>{children}</ul>,
+                          ol: ({ children }) => <ol style={{ paddingLeft: '1.5em', marginBottom: '0.5em' }}>{children}</ol>,
+                          li: ({ children }) => <li style={{ marginBottom: '0.25em' }}>{children}</li>,
+                          a: ({ children, href }) => (
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: 'var(--primary)', textDecoration: 'underline' }}
+                            >
+                              {children}
+                            </a>
+                          ),
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
+                  {msg.sources && msg.sources.length > 0 && (
+                    <div className="msg-sources">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                        <BookOpen size={14} style={{ color: 'var(--primary)' }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Sources</span>
+                      </div>
+                      {msg.sources.map((source, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            fontSize: 12,
+                            color: 'var(--text-muted)',
+                            padding: '6px 10px',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: '4px',
+                            marginBottom: 4,
+                            borderLeft: '2px solid var(--primary)',
+                          }}
+                        >
+                          <span style={{ fontWeight: 600, color: 'var(--primary)' }}>[{idx + 1}]</span> {source}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="msg-citations">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                        <BookOpen size={14} style={{ color: 'var(--primary)' }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>Citations</span>
+                      </div>
+                      {msg.citations.map((citation, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            fontSize: 12,
+                            color: 'var(--text-muted)',
+                            padding: '6px 10px',
+                            background: 'var(--bg-secondary)',
+                            borderRadius: '4px',
+                            marginBottom: 4,
+                          }}
+                        >
+                          <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{citation.page && `Page ${citation.page}: `}</span>
+                          {citation.text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {msg.created_at && !msg.typing && (
                     <div className="bubble-time">{formatTime(msg.created_at)}</div>
                   )}
