@@ -25,7 +25,12 @@ class DocumentUploadView(APIView):
         if not validation["valid"]:
             return Response({"file": validation["errors"]}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = DocumentSerializer(data=request.data, context={"request": request})
+        # Prepare data for serializer - ensure title is included even if empty
+        data = request.data.copy()
+        if 'title' not in data:
+            data['title'] = ''
+        
+        serializer = DocumentSerializer(data=data, context={"request": request})
         if serializer.is_valid():
             document = serializer.save(
                 owner=request.user,
