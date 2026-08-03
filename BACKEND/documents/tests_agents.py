@@ -80,3 +80,41 @@ class PdfParserAndCleanerTestCase(TestCase):
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
+
+class MetadataAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="meta_user", password="Password123!")
+
+    def test_language_detector(self):
+        from ai_engine.services.language_detector import detect_language
+
+        self.assertEqual(detect_language(""), "en")
+        self.assertIn(detect_language("Bonjour tout le monde. C'est un test en français."), ["fr", "en"])
+
+    def test_keyword_extractor(self):
+        from ai_engine.services.keyword_extractor import extract_keywords
+
+        text = "Artificial intelligence and machine learning are revolutionizing technology. Machine learning is great."
+        keywords = extract_keywords(text)
+        self.assertIsInstance(keywords, list)
+        self.assertIn("learning", keywords)
+        self.assertIn("machine", keywords)
+
+    def test_metadata_agent_extraction(self):
+        from ai_engine.agents.metadata_agent import extract_metadata
+
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Metadata Doc",
+            text_content="Python is an interpreted high-level general-purpose programming language. Python design philosophy emphasizes code readability.",
+            pages=5
+        )
+
+        metadata = extract_metadata(doc)
+        self.assertEqual(metadata["pages"], 5)
+        self.assertIsInstance(metadata["keywords"], list)
+        self.assertIn("python", metadata["keywords"])
+        self.assertIsNotNone(metadata["reading_time"])
+
+
