@@ -175,7 +175,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # CORS configuration
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'true').lower() == 'true'
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://127.0.0.1:3000,http://localhost:5173,http://localhost:5174').split(',')
+CORS_ALLOW_CREDENTIALS = True
 
 # MinIO / object storage config
 MINIO_ENDPOINT = os.environ.get('MINIO_ENDPOINT', '')

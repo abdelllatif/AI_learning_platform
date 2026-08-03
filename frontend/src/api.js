@@ -95,7 +95,7 @@ export async function apiFetch(path, { method = 'GET', body, auth = true, header
   const doFetch = async token => {
     const reqHeaders = { ...opts.headers }
     if (auth && token) reqHeaders.Authorization = `Bearer ${token}`
-    return fetch(`${BASE}${path}`, { ...opts, headers: reqHeaders })
+    return fetch(`${BASE}${path}`, { ...opts, headers: reqHeaders, credentials: 'include' })
   }
 
   let res = await doFetch(auth ? getAccessToken() : null)
