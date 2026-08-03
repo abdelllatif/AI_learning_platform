@@ -25,7 +25,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuizSerializer(serializers.ModelSerializer):
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+    document = serializers.PrimaryKeyRelatedField(
+        queryset=Document.objects.all(),
+        required=False,
+        allow_null=True,
+    )
     document_title = serializers.CharField(source="document.title", read_only=True)
     questions = QuestionSerializer(many=True)
 
@@ -50,7 +54,7 @@ class QuizSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Authentication required.")
         if value.owner != request.user:
             raise serializers.ValidationError("Document does not belong to you.")
-        if (value.status or "").upper() != "READY":
+        if not value.is_ready:
             raise serializers.ValidationError("Document must be READY to create a quiz.")
         return value
 

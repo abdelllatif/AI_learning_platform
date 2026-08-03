@@ -53,14 +53,11 @@ class ChatSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Authentication required.")
         if value and value.owner != request.user:
             raise serializers.ValidationError("Document does not belong to you.")
-        if value and (value.status or "").upper() != "READY":
+        if value and not value.is_ready:
             raise serializers.ValidationError("Document must be READY to start a chat.")
         return value
 
     def validate(self, attrs):
-        request = self.context.get("request")
-        if not self.instance and attrs.get("document") is None:
-            raise serializers.ValidationError({"document": "Document is required to create a chat."})
         return super().validate(attrs)
 
     def create(self, validated_data):

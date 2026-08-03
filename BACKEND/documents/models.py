@@ -75,6 +75,10 @@ class Document(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def is_ready(self) -> bool:
+        return (self.status or "").upper() == self.STATUS_READY
+
 
 class DocumentChunk(models.Model):
     document = models.ForeignKey(

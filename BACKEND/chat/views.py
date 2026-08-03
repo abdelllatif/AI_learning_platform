@@ -66,8 +66,6 @@ class UserMessageCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         chat = get_object_or_404(Chat, pk=self.kwargs["chat_id"], owner=self.request.user)
-        if not chat.document or (chat.document.status or "").upper() != chat.document.STATUS_READY:
-            raise serializers.ValidationError("The linked document is not ready yet.")
 
         Message.objects.create(chat=chat, sender=Message.SENDER_USER, content=serializer.validated_data["content"])
         ai_content = answer_user_question(chat, serializer.validated_data["content"])

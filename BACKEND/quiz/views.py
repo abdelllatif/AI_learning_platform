@@ -6,8 +6,10 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from documents.models import Document
 from .models import Quiz, Question, Answer, QuizAttempt, AttemptAnswer
 from .serializers import QuizSerializer, QuizDetailSerializer, QuizAttemptSerializer
+from ai_engine.agents.quiz_agent import generate_quiz
 
 
 class QuizListCreateView(generics.ListCreateAPIView):

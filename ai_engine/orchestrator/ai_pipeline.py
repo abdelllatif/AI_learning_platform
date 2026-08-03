@@ -1,6 +1,7 @@
 import traceback
 from threading import Thread
 
+from django.db import transaction
 from documents.models import Document
 from ai_engine.agents.ingestion_agent import ingest_document
 from ai_engine.agents.chunk_agent import chunk_document
@@ -8,7 +9,7 @@ from ai_engine.agents.embedding_agent import embed_document_chunks
 from ai_engine.agents.title_agent import generate_title
 from ai_engine.agents.metadata_agent import extract_metadata
 from ai_engine.agents.summary_agent import generate_summary
-from ai_engine.agents.quiz_agent import generate_quiz
+from ai_engine.agents.quiz_agent import generate_quiz, save_quiz
 from ai_engine.agents.chat_agent import create_default_chat
 
 
@@ -26,27 +27,30 @@ def _process_document(document_id: int):
     document.save(update_fields=["status"])
 
     try:
-        ingest_document(document)
-        chunk_document(document)
-        embed_document_chunks(document)
-        title = generate_title(document)
-        metadata = extract_metadata(document)
-        summary = generate_summary(document)
-        quiz = generate_quiz(document)
+        with transaction.atomic():
+            ingest_document(document)
+            chunk_document(document)
+            embed_document_chunks(document)
+            title = generate_title(document)
+            metadata = extract_metadata(document)
+            summary = generate_summary(document)
+            quiz_data = generate_quiz(document)
 
-        if title:
-            document.title = title
-        document.summary = summary
-        document.keywords = metadata.get("keywords") or []
-        document.reading_time = metadata.get("reading_time")
-        if metadata.get("language"):
-            document.language = metadata["language"]
-        document.save(update_fields=["title", "language", "summary", "keywords", "reading_time"])
+            if title:
+                document.title = title
+            document.summary = summary
+            document.keywords = metadata.get("keywords") or []
+            document.reading_time = metadata.get("reading_time")
+            if metadata.get("language"):
+                document.language = metadata["language"]
+            document.save(update_fields=["title", "language", "summary", "keywords", "reading_time"])
 
-        document.status = Document.STATUS_READY
-        document.save(update_fields=["status"])
+            document.status = Document.STATUS_READY
+            document.save(update_fields=["status"])
 
-        create_default_chat(document, summary)
+            create_default_chat(document, summary)
+            if quiz_data and isinstance(quiz_data.get("questions"), list) and quiz_data["questions"]:
+                save_quiz(document, quiz_data)
     except Exception:
         document.status = Document.STATUS_FAILED
         document.save(update_fields=["status"])
