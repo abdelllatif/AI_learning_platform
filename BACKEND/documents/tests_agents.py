@@ -49,3 +49,34 @@ class ValidatorAgentTestCase(TestCase):
         val2 = validate_pdf(pdf_file, owner=self.user)
         self.assertFalse(val2["valid"])
         self.assertIn("This document appears to be a duplicate.", val2["errors"])
+
+
+class PdfParserAndCleanerTestCase(TestCase):
+    def test_clean_text_normalizes_line_endings_and_spaces(self):
+        from ai_engine.parser.text_cleaner import clean_text
+
+        raw = "Hello\r\n\r\nWorld!\n\n\n\nThis   is   a   test.\t\tEnd.  \n "
+        cleaned = clean_text(raw)
+        self.assertEqual(cleaned, "Hello\n\nWorld!\n\nThis is a test. End.")
+
+    def test_clean_text_empty(self):
+        from ai_engine.parser.text_cleaner import clean_text
+
+        self.assertEqual(clean_text(""), "")
+        self.assertEqual(clean_text(None), "")
+
+    def test_parse_pdf_fallback(self):
+        from ai_engine.parser.pdf_parser import parse_pdf
+        import tempfile, os
+
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            tmp.write(b"%PDF-1.4\n%EOF")
+            tmp_path = tmp.name
+
+        try:
+            text = parse_pdf(tmp_path)
+            self.assertIsInstance(text, str)
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+
