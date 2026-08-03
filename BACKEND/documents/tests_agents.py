@@ -153,4 +153,34 @@ class TitleAndSummaryAgentTestCase(TestCase):
         self.assertTrue(bool(summary and summary.strip()))
 
 
+class ChunkAndEmbeddingAgentTestCase(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="ce_user", password="Password123!")
+
+    def test_chunk_and_embed_document(self):
+        from ai_engine.agents.chunk_agent import chunk_document
+        from ai_engine.agents.embedding_agent import embed_document_chunks
+        from documents.models import DocumentChunk
+
+        long_text = "Word " * 1000
+        doc = Document.objects.create(
+            owner=self.user,
+            title="Long Chunk Document",
+            text_content=long_text
+        )
+
+        chunk_document(doc)
+        chunks = DocumentChunk.objects.filter(document=doc).order_by("chunk_index")
+        self.assertGreater(chunks.count(), 1)
+        self.assertEqual(chunks[0].chunk_index, 0)
+        self.assertEqual(chunks[1].chunk_index, 1)
+
+        embed_document_chunks(doc)
+        first_chunk = DocumentChunk.objects.get(pk=chunks[0].pk)
+        self.assertIsNotNone(first_chunk.embedding)
+        self.assertGreater(len(first_chunk.embedding), 0)
+
+
+
 
